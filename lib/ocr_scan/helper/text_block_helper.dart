@@ -16,11 +16,15 @@ enum HorizontalDirection {
 class TextBlockHelper {
   /// Retourne les résultats de la regex sous forme de List<List<BrsTextElement>>
   /// Ex :
+  ///
   ///     List<BrsTextElement> elementList = ['Ca','va','comment','?','Ca','va', 'bien', '!'];
   ///     RegExp regExp = RegExp(r'Ca va');
   ///     Result : elementList = [['Ca','va']['Ca','va']]
   ///
-  static List<List<BrsTextElement>> extractTextElementsWithRegex(List<BrsTextElement> textElements, RegExp regExp) {
+  static List<List<BrsTextElement>> extractTextElementsWithRegex(
+    List<BrsTextElement> textElements,
+    RegExp regExp,
+  ) {
     List<List<BrsTextElement>> listScannedText = [];
     String text = '';
     for (var textElement in textElements) {
@@ -49,9 +53,11 @@ class TextBlockHelper {
 
   /// Supprime les TextElements correspondant au texte
   /// Ex :
+  ///
   ///     List<BrsTextElement> elementList = ['Ca','va','comment','?','Ca', 'va', 'bien', '!'];
   ///     String text = 'Ca va bien';
   ///     Result : elementList = ['Ca','va','comment','?', '!']
+  ///
   List<BrsTextElement> removeTextElement(List<BrsTextElement> elementList, String text) {
     for (int i = 0; i < elementList.length; i++) {
       String concatenation = elementList[i].text;
@@ -77,6 +83,15 @@ class TextBlockHelper {
     return elementList;
   }
 
+  /// Retourne le prochain BrsTextElement a gauche ou a droite
+  /// Ex :
+  /// Pour simplifier, on considére que tous les block sont dans l'ordre et sur la meme ligne.
+  ///
+  ///     List<BrsTextBlock> blocks = [['Ca','va','comment']['?']['Ca', 'va', 'bien', '!']];
+  ///     HorizontalDirection direction = HorizontalDirection.right;
+  ///     BrsTextElement startElement = 'comment';
+  ///     Result : BrsTextElement = ['?']
+  ///
   static BrsTextElement? nextTextElement(
     BrsTextElement startElement,
     List<BrsTextBlock> blocks,
@@ -140,8 +155,15 @@ class TextBlockHelper {
     return null;
   }
 
-  /// Pour chaque TextBlock, on récupere les TextElement traversé par la ligne
-  /// puis on retourne la nouvelle liste des elements combinés
+  /// Retourne une BrsTextLine qui est ligne compléte crée a partir d'un TextElement
+  /// Ex :
+  /// Pour simplifier, on considére que tous les block sont dans l'ordre et sur la meme ligne.
+  ///
+  ///     List<BrsTextBlock> blocks = [['Ca','va','comment']['?']['Ca', 'va', 'bien', '!']];
+  ///     HorizontalDirection direction = HorizontalDirection.right;
+  ///     BrsTextElement startElement = '?';
+  ///     Result : BrsTextElement = ['Ca','va','comment','?','Ca', 'va','bien', '!']
+  ///
   static BrsTextLine combineRecreateTextLine(BrsTextElement startElement, List<BrsTextBlock> blocks) {
     List<BrsTextElement> listTextElement = [startElement];
 
@@ -176,8 +198,14 @@ class TextBlockHelper {
     );
   }
 
-  /// Pour chaque TextBlock, on récupere les TextElement traversé par la ligne
-  /// puis on retourne la nouvelle liste des elements combinés
+  /// Retourne une Liste de BrsTextElement avec tout les BrsTextElement a gauche de startElement
+  /// Ex :
+  /// Pour simplifier, on considére que tous les block sont dans l'ordre et sur la meme ligne.
+  ///
+  ///     List<BrsTextBlock> blocks = [['Ca','va','comment']['?']['Ca', 'va', 'bien', '!']];
+  ///     BrsTextElement startElement = 'comment';
+  ///     Result : List<BrsTextElement> = ['Ca','va','comment']
+  ///
   static List<BrsTextElement> combineLeftTextElement(BrsTextElement startElement, List<BrsTextBlock> blocks) {
     List<BrsTextElement> listTextElement = [startElement];
 
@@ -190,8 +218,14 @@ class TextBlockHelper {
     return listTextElement.reversed.toList();
   }
 
-  /// Pour chaque TextBlock, on récupere les TextElement traversé par la ligne
-  /// puis on retourne la nouvelle liste des elements combinés
+  /// Retourne une Liste de BrsTextElement avec tout les BrsTextElement a droite de startElement
+  /// Ex :
+  /// Pour simplifier, on considére que tous les block sont dans l'ordre et sur la meme ligne.
+  ///
+  ///     List<BrsTextBlock> blocks = [['Ca','va','comment']['?']['Ca', 'va', 'bien', '!']];
+  ///     BrsTextElement startElement = 'comment';
+  ///     Result : List<BrsTextElement> = ['?', 'Ca','va', 'bien', '!']
+  ///
   static List<BrsTextElement> combineRightTextElement(BrsTextElement startElement, List<BrsTextBlock> blocks) {
     List<BrsTextElement> listTextElement = [startElement];
 
