@@ -8,13 +8,13 @@ import '../model/recognizer_text/text_element.dart';
 import '../model/recognizer_text/text_line.dart';
 import '../model/shape/trapezoid.dart';
 
-enum _HorizontalDirection {
+enum HorizontalDirection {
   left,
   right,
 }
 
 class TextBlockHelper {
-  /// Supprime les elements correspondant au texte
+  /// Supprime les TextElements correspondant au texte
   /// Ex :
   ///     List<BrsTextElement> elementList = ['Ca','va','comment','?','Ca', 'va', 'bien', '!'];
   ///     String text = 'Ca va bien';
@@ -44,10 +44,10 @@ class TextBlockHelper {
     return elementList;
   }
 
-  static BrsTextElement? _nextTextElement(
+  static BrsTextElement? nextTextElement(
     BrsTextElement startElement,
     List<BrsTextBlock> blocks,
-    _HorizontalDirection direction,
+    HorizontalDirection direction,
   ) {
     double angle;
 
@@ -71,8 +71,8 @@ class TextBlockHelper {
 
     // 1000 est un nombre arbitraire, on cherche juste a faire une grande ligne
     Offset endPoint = Offset(
-      startPoint.dx + (direction == _HorizontalDirection.left ? -1000 : 1000) * cos(angle),
-      startPoint.dy + (direction == _HorizontalDirection.left ? -1000 : 1000) * sin(angle),
+      startPoint.dx + (direction == HorizontalDirection.left ? -1000 : 1000) * cos(angle),
+      startPoint.dy + (direction == HorizontalDirection.left ? -1000 : 1000) * sin(angle),
     );
 
     blocks.sort(
@@ -115,14 +115,14 @@ class TextBlockHelper {
     bool asNext = true;
 
     while (asNext) {
-      BrsTextElement? nextElement = _nextTextElement(listTextElement.last, blocks, _HorizontalDirection.left);
+      BrsTextElement? nextElement = nextTextElement(listTextElement.last, blocks, HorizontalDirection.left);
       nextElement == null ? asNext = false : listTextElement.add(nextElement);
     }
     listTextElement = listTextElement.reversed.toList();
     asNext = true;
 
     while (asNext) {
-      BrsTextElement? nextElement = _nextTextElement(listTextElement.last, blocks, _HorizontalDirection.right);
+      BrsTextElement? nextElement = nextTextElement(listTextElement.last, blocks, HorizontalDirection.right);
       nextElement == null ? asNext = false : listTextElement.add(nextElement);
     }
 
@@ -151,7 +151,7 @@ class TextBlockHelper {
     bool asNext = true;
 
     while (asNext) {
-      BrsTextElement? nextElement = _nextTextElement(listTextElement.last, blocks, _HorizontalDirection.left);
+      BrsTextElement? nextElement = nextTextElement(listTextElement.last, blocks, HorizontalDirection.left);
       nextElement == null ? asNext = false : listTextElement.add(nextElement);
     }
     return listTextElement.reversed.toList();
@@ -165,7 +165,7 @@ class TextBlockHelper {
     bool asNext = true;
 
     while (asNext) {
-      BrsTextElement? nextElement = _nextTextElement(listTextElement.last, blocks, _HorizontalDirection.right);
+      BrsTextElement? nextElement = nextTextElement(listTextElement.last, blocks, HorizontalDirection.right);
       nextElement == null ? asNext = false : listTextElement.add(nextElement);
     }
     return listTextElement;
