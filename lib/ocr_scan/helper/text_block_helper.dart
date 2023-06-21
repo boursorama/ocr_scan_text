@@ -14,6 +14,39 @@ enum HorizontalDirection {
 }
 
 class TextBlockHelper {
+  /// Retourne les résultats de la regex sous forme de List<List<BrsTextElement>>
+  /// Ex :
+  ///     List<BrsTextElement> elementList = ['Ca','va','comment','?','Ca','va', 'bien', '!'];
+  ///     RegExp regExp = RegExp(r'Ca va');
+  ///     Result : elementList = [['Ca','va']['Ca','va']]
+  ///
+  static List<List<BrsTextElement>> extractTextElementsWithRegex(List<BrsTextElement> textElements, RegExp regExp) {
+    List<List<BrsTextElement>> listScannedText = [];
+    String text = '';
+    for (var textElement in textElements) {
+      text += textElement == textElements.first ? textElement.text : ' ${textElement.text}';
+    }
+
+    List<RegExpMatch> matchs = regExp.allMatches(text).toList();
+    for (RegExpMatch match in matchs) {
+      if (match.start < 0 || match.end == 0) {
+        continue;
+      }
+
+      /// On reconstruit la liste des TextElements
+      List<BrsTextElement> foundElements = [];
+      String matchString = text.substring(match.start, match.end);
+      for (BrsTextElement element in textElements) {
+        if (matchString.contains(element.text)) {
+          foundElements.add(element);
+        }
+      }
+      listScannedText.add(foundElements);
+    }
+
+    return listScannedText;
+  }
+
   /// Supprime les TextElements correspondant au texte
   /// Ex :
   ///     List<BrsTextElement> elementList = ['Ca','va','comment','?','Ca', 'va', 'bien', '!'];
