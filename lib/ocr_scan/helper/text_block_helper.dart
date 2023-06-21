@@ -11,10 +11,39 @@ import '../model/shape/trapezoid.dart';
 enum _HorizontalDirection {
   left,
   right,
-  all,
 }
 
 class TextBlockHelper {
+  /// Supprime les elements correspondant au texte
+  /// Ex :
+  ///     List<BrsTextElement> elementList = ['Ca','va','comment','?','Ca', 'va', 'bien', '!'];
+  ///     String text = 'Ca va bien';
+  ///     Result : elementList = ['Ca','va','comment','?', '!']
+  List<BrsTextElement> removeTextElement(List<BrsTextElement> elementList, String text) {
+    for (int i = 0; i < elementList.length; i++) {
+      String concatenation = elementList[i].text;
+      if (concatenation == text) {
+        elementList.removeAt(i);
+        i = 0;
+        continue;
+      } else {
+        for (int j = i + 1; j < elementList.length; j++) {
+          concatenation += ' ${elementList[j].text}';
+          if (concatenation == text) {
+            elementList.removeRange(i, j + 1);
+            i = 0;
+            break;
+          }
+          if (concatenation.length > text.length) {
+            break;
+          }
+        }
+      }
+    }
+
+    return elementList;
+  }
+
   static BrsTextElement? _nextTextElement(
     BrsTextElement startElement,
     List<BrsTextBlock> blocks,
