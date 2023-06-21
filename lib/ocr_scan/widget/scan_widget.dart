@@ -85,7 +85,7 @@ class ScanWidgetState<T extends ScanWidget> extends State<T> {
 
     var painter = ScanRenderer(
       mapScanModules: mapModule,
-      imageRotation: inputImage.metadata?.rotation ?? InputImageRotation.rotation90deg, // TODO : A CORRIGER
+      imageRotation: inputImage.metadata?.rotation ?? InputImageRotation.rotation90deg,
       imageSize: imageSize,
     );
 
