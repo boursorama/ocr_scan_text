@@ -25,12 +25,12 @@ class _MyAppState extends State<MyApp> {
           width: MediaQuery.of(context).size.width - 20,
           height: MediaQuery.of(context).size.height - 40,
           child: LiveScanWidget(
-            matchedResult: (ScanModule module, List<MatchedCounter> matchedResult) {
+            matchedResult: (ScanModule module, List<TextBlockResult> textBlockResult) {
               if (module is! ScanAllModule) {
                 return;
               }
-              for (var element in matchedResult) {
-                print("matchedResult : ${element.scanResult.block.text}");
+              for (var element in textBlockResult) {
+                print("matchedResult : ${element.text}");
                 // module.stop();
               }
             },

@@ -5,6 +5,7 @@ import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart
 import 'package:image/image.dart' as Img;
 
 import '../model/matched_counter.dart';
+import '../model/recognizer_text/text_block_result.dart';
 import '../module/scan_module.dart';
 import '../render/scan_renderer.dart';
 
@@ -12,7 +13,7 @@ class ScanWidget extends StatefulWidget {
   static bool DEBUG_MODE = false;
 
   final List<ScanModule> scanModules;
-  final Function(ScanModule module, List<MatchedCounter> matchedCounterList) matchedResult;
+  final Function(ScanModule module, List<TextBlockResult> textBlockResult) matchedResult;
 
   const ScanWidget({
     Key? key,
@@ -91,13 +92,17 @@ class ScanWidgetState<T extends ScanWidget> extends State<T> {
     customPaint = CustomPaint(painter: painter);
 
     mapModule.forEach((key, matchCounterList) {
+      List<TextBlockResult> list = matchCounterList
+          .where(
+            (matchCounter) => matchCounter.scanResult.validated == true,
+          )
+          .map<TextBlockResult>((e) => e.scanResult.block)
+          .toList();
+
       widget.matchedResult(
-          key,
-          matchCounterList
-              .where(
-                (matchCounter) => matchCounter.scanResult.validated == true,
-              )
-              .toList());
+        key,
+        list,
+      );
     });
 
     if (!converting) {
