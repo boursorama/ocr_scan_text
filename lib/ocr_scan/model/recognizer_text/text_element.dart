@@ -20,4 +20,14 @@ class BrsTextElement extends BrsRecognizerText {
       ),
     );
   }
+
+  BrsTextElement copyWith({
+    String? text,
+    Trapezoid? trapezoid,
+  }) {
+    return BrsTextElement(
+      text: text ?? this.text,
+      trapezoid: trapezoid ?? this.trapezoid,
+    );
+  }
 }

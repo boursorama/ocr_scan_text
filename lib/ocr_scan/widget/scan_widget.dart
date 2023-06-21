@@ -100,8 +100,6 @@ class ScanWidgetState<T extends ScanWidget> extends State<T> {
               .toList());
     });
 
-    // await Future.delayed(Duration(seconds: 3));
-
     if (!converting) {
       _isBusy = false;
     }

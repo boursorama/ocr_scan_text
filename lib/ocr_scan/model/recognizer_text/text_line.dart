@@ -29,4 +29,16 @@ class BrsTextLine extends BrsRecognizerText {
       ),
     );
   }
+
+  BrsTextLine copyWith({
+    String? text,
+    List<BrsTextElement>? elements,
+    Trapezoid? trapezoid,
+  }) {
+    return BrsTextLine(
+      text: text ?? this.text,
+      elements: elements ?? this.elements,
+      trapezoid: trapezoid ?? this.trapezoid,
+    );
+  }
 }
