@@ -20,6 +20,7 @@ abstract class ScanModule {
 
   String label;
   Color color;
+  List<TextBlock> originalTextBlock = [];
 
   ScanModule({
     required this.label,
@@ -77,6 +78,8 @@ abstract class ScanModule {
       return matchedCounterList;
     }
     _busyGenerated = true;
+
+    originalTextBlock = textBlock;
 
     List<ScanResult> tempMatched = await matchedScanLines(
       _convertTextBlocks(textBlock),
