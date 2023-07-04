@@ -16,7 +16,7 @@ class Trapezoid {
     required this.bottomRightOffset,
   });
 
-  static Offset pointToOffset(
+  static Offset _initPointToOffset(
     Point<int> point,
     Size imageSize,
   ) {
@@ -41,19 +41,19 @@ class Trapezoid {
     Size imageSize,
   ) {
     return Trapezoid(
-      topLeftOffset: pointToOffset(
+      topLeftOffset: _initPointToOffset(
         cornerPoints[0],
         imageSize,
       ),
-      topRightOffset: pointToOffset(
+      topRightOffset: _initPointToOffset(
         cornerPoints[1],
         imageSize,
       ),
-      bottomRightOffset: pointToOffset(
+      bottomRightOffset: _initPointToOffset(
         cornerPoints[2],
         imageSize,
       ),
-      bottomLeftOffset: pointToOffset(
+      bottomLeftOffset: _initPointToOffset(
         cornerPoints[3],
         imageSize,
       ),
