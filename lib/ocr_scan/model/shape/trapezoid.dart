@@ -16,19 +16,47 @@ class Trapezoid {
     required this.bottomRightOffset,
   });
 
-  static Offset pointToOffset(Point<int> point) {
+  static Offset pointToOffset(
+    Point<int> point,
+    Size imageSize,
+  ) {
+    /// TODO: CA MARCHE PEUT ETRE PAS TOUJOURS
+    /// TODO: A TESTER EN LANDSCAPE
+    /// Sur android les cornersPoints ont des positions qui différe des axes principaux
+    /// X et Y sont inversé et le 0 de l'axe inversé se trouve a imageSize.height
+    if (Platform.isAndroid) {
+      return Offset(
+        imageSize.height - point.y.toDouble(),
+        point.x.toDouble(),
+      );
+    }
     return Offset(
       point.x.toDouble(),
       point.y.toDouble(),
     );
   }
 
-  factory Trapezoid.fromCornerPoint(List<Point<int>> cornerPoints) {
+  factory Trapezoid.fromCornerPoint(
+    List<Point<int>> cornerPoints,
+    Size imageSize,
+  ) {
     return Trapezoid(
-      topLeftOffset: pointToOffset(cornerPoints[0]),
-      bottomLeftOffset: pointToOffset(cornerPoints[3]),
-      topRightOffset: pointToOffset(cornerPoints[1]),
-      bottomRightOffset: pointToOffset(cornerPoints[2]),
+      topLeftOffset: pointToOffset(
+        cornerPoints[0],
+        imageSize,
+      ),
+      topRightOffset: pointToOffset(
+        cornerPoints[1],
+        imageSize,
+      ),
+      bottomRightOffset: pointToOffset(
+        cornerPoints[2],
+        imageSize,
+      ),
+      bottomLeftOffset: pointToOffset(
+        cornerPoints[3],
+        imageSize,
+      ),
     );
   }
 
@@ -39,136 +67,6 @@ class Trapezoid {
     double margeWidth,
     double margeHeight,
   ) {
-    /// TODO: CA MARCHE PAS TOUJOURS
-    /// TODO: A TESTER EN LANDSCAPE
-    /// C'est la merde sur android, il y a un soucis d'orientation entre
-    /// la photo et le resultat de ml_kit :
-    ///   - 1) Les valeurs x et y sont inversé, on inverse donc les valeurs
-    ///   - 2) L'axe X est inversé, le 0 se trouve a size.width, on inverse les valeurs
-    if (Platform.isAndroid) {
-      return Trapezoid(
-        topLeftOffset: Offset(
-          size.width -
-              _translateY(
-                topLeftOffset.dy - margeHeight,
-                rotation,
-                size,
-                inputImageSize,
-              ),
-          _translateX(
-            topLeftOffset.dx - margeWidth,
-            rotation,
-            size,
-            inputImageSize,
-          ),
-        ),
-        bottomLeftOffset: Offset(
-          size.width -
-              _translateY(
-                bottomLeftOffset.dy + margeHeight,
-                rotation,
-                size,
-                inputImageSize,
-              ),
-          _translateX(
-            bottomLeftOffset.dx - margeWidth,
-            rotation,
-            size,
-            inputImageSize,
-          ),
-        ),
-        topRightOffset: Offset(
-          size.width -
-              _translateY(
-                topRightOffset.dy - margeHeight,
-                rotation,
-                size,
-                inputImageSize,
-              ),
-          _translateX(
-            topRightOffset.dx + margeWidth,
-            rotation,
-            size,
-            inputImageSize,
-          ),
-        ),
-        bottomRightOffset: Offset(
-          size.width -
-              _translateY(
-                bottomRightOffset.dy + margeHeight,
-                rotation,
-                size,
-                inputImageSize,
-              ),
-          _translateX(
-            bottomRightOffset.dx + margeWidth,
-            rotation,
-            size,
-            inputImageSize,
-          ),
-        ),
-      );
-    }
-
-    return Trapezoid(
-      topLeftOffset: Offset(
-        _translateX(
-          topLeftOffset.dx - margeWidth,
-          rotation,
-          size,
-          inputImageSize,
-        ),
-        _translateY(
-          topLeftOffset.dy - margeHeight,
-          rotation,
-          size,
-          inputImageSize,
-        ),
-      ),
-      bottomLeftOffset: Offset(
-        _translateX(
-          bottomLeftOffset.dx - margeWidth,
-          rotation,
-          size,
-          inputImageSize,
-        ),
-        _translateY(
-          bottomLeftOffset.dy + margeHeight,
-          rotation,
-          size,
-          inputImageSize,
-        ),
-      ),
-      topRightOffset: Offset(
-        _translateX(
-          topRightOffset.dx + margeWidth,
-          rotation,
-          size,
-          inputImageSize,
-        ),
-        _translateY(
-          topRightOffset.dy - margeHeight,
-          rotation,
-          size,
-          inputImageSize,
-        ),
-      ),
-      bottomRightOffset: Offset(
-        _translateX(
-          bottomRightOffset.dx + margeWidth,
-          rotation,
-          size,
-          inputImageSize,
-        ),
-        _translateY(
-          bottomRightOffset.dy + margeHeight,
-          rotation,
-          size,
-          inputImageSize,
-        ),
-      ),
-    );
-
     return Trapezoid(
       topLeftOffset: Offset(
         _translateX(

@@ -18,13 +18,12 @@ abstract class ScanModule {
 
   List<MatchedCounter> matchedCounterList = [];
 
-  String label;
+  String? label;
   Color color;
-  List<TextBlock> originalTextBlock = [];
 
   ScanModule({
-    required this.label,
-    required this.color,
+    this.label,
+    this.color = Colors.transparent,
     this.validateCountCorrelation = 5,
     this.maxCorrelation = 10,
     this.distanceCorrelation = 30,
@@ -62,10 +61,16 @@ abstract class ScanModule {
     return false;
   }
 
-  List<BrsTextBlock> _convertTextBlocks(List<TextBlock> textBlock) {
+  List<BrsTextBlock> _convertTextBlocks(
+    List<TextBlock> textBlock,
+    Size imageSize,
+  ) {
     List<BrsTextBlock> brsTextBlock = [];
     for (var block in textBlock) {
-      brsTextBlock.add(BrsTextBlock.fromTextBlock(block));
+      brsTextBlock.add(BrsTextBlock.fromTextBlock(
+        block,
+        imageSize,
+      ));
     }
     return brsTextBlock;
   }
@@ -73,16 +78,18 @@ abstract class ScanModule {
   Future<List<MatchedCounter>> generateScanLines(
     List<TextBlock> textBlock,
     String text,
+    Size imageSize,
   ) async {
     if (_busyGenerated) {
       return matchedCounterList;
     }
     _busyGenerated = true;
 
-    originalTextBlock = textBlock;
-
     List<ScanResult> tempMatched = await matchedScanLines(
-      _convertTextBlocks(textBlock),
+      _convertTextBlocks(
+        textBlock,
+        imageSize,
+      ),
       text,
     );
 

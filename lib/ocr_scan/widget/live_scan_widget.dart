@@ -49,6 +49,7 @@ class LiveScanWidgetState extends ScanWidgetState<LiveScanWidget> {
     if (cameraController == null || !cameraController.value.isInitialized) {
       return const Text('Tap a camera');
     } else {
+      CustomPaint? customPaint = this.customPaint;
       return AspectRatio(
         aspectRatio: 0.5,
         child: Center(
@@ -60,7 +61,7 @@ class LiveScanWidgetState extends ScanWidgetState<LiveScanWidget> {
                     ? null
                     : LayoutBuilder(
                         builder: (BuildContext context, BoxConstraints constraints) {
-                          return customPaint!;
+                          return customPaint;
                         },
                       ),
               ),

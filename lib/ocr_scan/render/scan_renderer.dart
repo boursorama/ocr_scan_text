@@ -89,10 +89,11 @@ class ScanRenderer extends CustomPainter {
             paint,
           );
 
-          if (matchedCount.scanResult.validated && module.label.isNotEmpty) {
+          String? moduleLabel = module.label;
+          if (moduleLabel != null && matchedCount.scanResult.validated) {
             paintNamed(
               canvas,
-              module.label,
+              moduleLabel,
               module.color,
             );
           } else {

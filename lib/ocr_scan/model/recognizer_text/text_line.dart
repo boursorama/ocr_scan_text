@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:ocr_scan_text/ocr_scan/model/recognizer_text/recognizer_text.dart';
 import 'package:ocr_scan_text/ocr_scan/model/recognizer_text/text_element.dart';
@@ -16,16 +18,23 @@ class BrsTextLine extends BrsRecognizerText {
           trapezoid: trapezoid,
         );
 
-  factory BrsTextLine.fromTextLine(TextLine textLine) {
+  factory BrsTextLine.fromTextLine(
+    TextLine textLine,
+    Size imageSize,
+  ) {
     List<BrsTextElement> elements = [];
     for (var element in textLine.elements) {
-      elements.add(BrsTextElement.fromTextElement(element));
+      elements.add(BrsTextElement.fromTextElement(
+        element,
+        imageSize,
+      ));
     }
     return BrsTextLine(
       text: textLine.text,
       elements: elements,
       trapezoid: Trapezoid.fromCornerPoint(
         textLine.cornerPoints,
+        imageSize,
       ),
     );
   }

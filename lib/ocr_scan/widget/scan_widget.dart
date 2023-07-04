@@ -75,6 +75,7 @@ class ScanWidgetState<T extends ScanWidget> extends State<T> {
       List<MatchedCounter> scanLines = await scanModule.generateScanLines(
         recognizedText.blocks,
         scannedText,
+        imageSize,
       );
 
       mapModule.putIfAbsent(
