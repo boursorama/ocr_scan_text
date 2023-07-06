@@ -7,7 +7,13 @@ import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart
 import 'package:ocr_scan_text/ocr_scan/widget/scan_widget.dart';
 
 class LiveScanWidget extends ScanWidget {
-  const LiveScanWidget({super.key, required super.scanModules, required super.matchedResult});
+  final bool respectRatio;
+  const LiveScanWidget({
+    super.key,
+    required super.scanModules,
+    required super.matchedResult,
+    this.respectRatio = false,
+  });
 
   @override
   LiveScanWidgetState createState() => LiveScanWidgetState();
@@ -32,12 +38,7 @@ class LiveScanWidgetState extends ScanWidgetState<LiveScanWidget> {
   @override
   Widget build(BuildContext context) {
     return _controller == null || _controller?.value == null || _controller?.value.isInitialized == false
-        ? Container(
-            decoration: BoxDecoration(
-              color: Colors.redAccent,
-              borderRadius: BorderRadius.circular(17),
-            ),
-          )
+        ? Container()
         : _cameraWidget();
   }
 
@@ -49,26 +50,33 @@ class LiveScanWidgetState extends ScanWidgetState<LiveScanWidget> {
     if (cameraController == null || !cameraController.value.isInitialized) {
       return const Text('Tap a camera');
     } else {
+      final size = MediaQuery.of(context).size;
       CustomPaint? customPaint = this.customPaint;
-      return AspectRatio(
-        aspectRatio: 0.5,
-        child: Center(
-          child: Column(
-            children: [
-              CameraPreview(
-                cameraController,
-                child: customPaint == null
-                    ? null
-                    : LayoutBuilder(
-                        builder: (BuildContext context, BoxConstraints constraints) {
-                          return customPaint;
-                        },
-                      ),
+      CameraPreview preview = CameraPreview(
+        cameraController,
+        child: customPaint == null
+            ? null
+            : LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  return customPaint;
+                },
               ),
-            ],
-          ),
-        ),
       );
+
+      return widget.respectRatio
+          ? Stack(
+              children: [
+                SizedBox(
+                  width: size.width,
+                  height: size.height,
+                  child: AspectRatio(
+                    aspectRatio: cameraController.value.aspectRatio,
+                    child: preview,
+                  ),
+                ),
+              ],
+            )
+          : preview;
     }
   }
 
