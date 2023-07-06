@@ -64,7 +64,8 @@ class LiveScanWidgetState extends ScanWidgetState<LiveScanWidget> {
       );
 
       return widget.respectRatio
-          ? Stack(
+          ? preview
+          : Stack(
               children: [
                 SizedBox(
                   width: size.width,
@@ -75,8 +76,7 @@ class LiveScanWidgetState extends ScanWidgetState<LiveScanWidget> {
                   ),
                 ),
               ],
-            )
-          : preview;
+            );
     }
   }
 
