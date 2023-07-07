@@ -1,8 +1,6 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
-
 class MathHelper {
   /// Permet de determiner si deux segments se croisent
   static bool doSegmentsIntersect(Offset p1, Offset p2, Offset q1, Offset q2) {
@@ -48,38 +46,5 @@ class MathHelper {
     );
 
     return blockAngle;
-  }
-
-  /// C'est assez compliqué d'obtenir l angle du document
-  /// La valeur n'est pas du tout précise
-  /// TODO : A VOIR POUR VIRER CA
-  static double retrieveAngleOLD(List<TextBlock> allBlocks) {
-    List<double> angleList = [];
-    for (var block in allBlocks) {
-      for (var line in block.lines) {
-        double blockAngle = atan2(
-          line.cornerPoints[1].y - line.cornerPoints[0].y,
-          line.cornerPoints[1].x - line.cornerPoints[0].x,
-        );
-        angleList.add(blockAngle);
-      }
-    }
-
-    angleList.sort();
-
-    double tempAngle = 0;
-    for (var angle in angleList) {
-      tempAngle += angle;
-    }
-
-    return tempAngle / angleList.length;
-/*
-    int indexMedian = angleList.length ~/ 2;
-
-    if (angleList.length % 2 == 1) {
-      return angleList[indexMedian];
-    } else {
-      return (angleList[indexMedian - 1] + angleList[indexMedian]) / 2;
-    }*/
   }
 }

@@ -23,12 +23,12 @@ class ScanRenderer extends CustomPainter {
     mapScanModules.forEach(
       (module, matchedCounterList) {
         for (MatchedCounter matchedCount in matchedCounterList) {
-          if (!matchedCount.scanResult.visible) {
+          if (!matchedCount.visible) {
             continue;
           }
 
           double marge = 8;
-          Trapezoid trapezoid = matchedCount.scanResult.block.rect.resizedTrapezoid(
+          Trapezoid trapezoid = matchedCount.scanResult.trapezoid.resizedTrapezoid(
             size,
             imageSize,
             imageRotation,
@@ -90,8 +90,8 @@ class ScanRenderer extends CustomPainter {
           );
 
           String? moduleLabel = module.label;
-          if (moduleLabel != null && matchedCount.scanResult.validated) {
-            paintNamed(
+          if (moduleLabel != null && matchedCount.validated) {
+            _paintLabel(
               canvas,
               moduleLabel,
               module.color,
@@ -125,7 +125,7 @@ class ScanRenderer extends CustomPainter {
     );
   }
 
-  void paintNamed(
+  void _paintLabel(
     Canvas canvas,
     String label,
     Color color,

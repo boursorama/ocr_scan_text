@@ -10,7 +10,7 @@ class ScanAllModule extends ScanModule {
         );
 
   @override
-  Future<List<ScanResult>> matchedScanLines(
+  Future<List<ScanResult>> matchedResult(
     List<BrsTextBlock> textBlock,
     String text,
   ) async {
@@ -20,22 +20,8 @@ class ScanAllModule extends ScanModule {
         for (var element in line.elements) {
           list.add(
             ScanResult(
-              block: TextBlockResult(
-                element.text,
-                BrsTextBlock(
-                  text: element.text,
-                  lines: [
-                    BrsTextLine(
-                      text: element.text,
-                      elements: [element],
-                      trapezoid: element.trapezoid,
-                    )
-                  ],
-                  trapezoid: element.trapezoid,
-                ),
-              ),
-              visible: true,
-              validated: true,
+              cleanedText: element.text,
+              scannedElementList: [element],
             ),
           );
         }

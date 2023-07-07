@@ -13,7 +13,6 @@ abstract class ScanModule {
 
   bool _started = false;
   bool _busyGenerated = false;
-  int maxCorrelation;
   bool get started => _started;
 
   List<MatchedCounter> matchedCounterList = [];
@@ -25,9 +24,10 @@ abstract class ScanModule {
     this.label,
     this.color = Colors.transparent,
     this.validateCountCorrelation = 5,
-    this.maxCorrelation = 10,
     this.distanceCorrelation = 30,
-  });
+  }) {
+    assert(validateCountCorrelation > 0);
+  }
 
   void start() {
     _started = true;
@@ -37,7 +37,7 @@ abstract class ScanModule {
     _started = false;
   }
 
-  Future<List<ScanResult>> matchedScanLines(
+  Future<List<ScanResult>> matchedResult(
     List<BrsTextBlock> textBlock,
     String text,
   );
@@ -46,15 +46,15 @@ abstract class ScanModule {
     ScanResult newScanLine,
     ScanResult oldScanLine,
   ) {
-    if (newScanLine.block.text == oldScanLine.block.text) {
+    if (newScanLine.cleanedText == oldScanLine.cleanedText) {
       if (_isBetween(
-              newScanLine.block.rect.topLeftOffset.dx,
-              oldScanLine.block.rect.topLeftOffset.dx - distanceCorrelation,
-              oldScanLine.block.rect.topLeftOffset.dx + distanceCorrelation) &&
+              newScanLine.trapezoid.topLeftOffset.dx,
+              oldScanLine.trapezoid.topLeftOffset.dx - distanceCorrelation,
+              oldScanLine.trapezoid.topLeftOffset.dx + distanceCorrelation) &&
           _isBetween(
-              newScanLine.block.rect.topLeftOffset.dy,
-              oldScanLine.block.rect.topLeftOffset.dy - distanceCorrelation,
-              oldScanLine.block.rect.topLeftOffset.dy + distanceCorrelation)) {
+              newScanLine.trapezoid.topLeftOffset.dy,
+              oldScanLine.trapezoid.topLeftOffset.dy - distanceCorrelation,
+              oldScanLine.trapezoid.topLeftOffset.dy + distanceCorrelation)) {
         return true;
       }
     }
@@ -85,7 +85,7 @@ abstract class ScanModule {
     }
     _busyGenerated = true;
 
-    List<ScanResult> tempMatched = await matchedScanLines(
+    List<ScanResult> newScanResult = await matchedResult(
       _convertTextBlocks(
         textBlock,
         imageSize,
@@ -93,76 +93,47 @@ abstract class ScanModule {
       text,
     );
 
-    List<MatchedCounter> newProgressMatched = [];
-    for (var scanLine in tempMatched) {
+    /// On met a jour les counter de visibilité des objets MatchedCounter :
+    /// - Si toujours présent dans la nouvelle liste, on up
+    /// - Si non présent, on down et on supprime si plus visible
+    List<MatchedCounter> matchedCounterListUpdated = [];
+    for (var element in matchedCounterList) {
+      bool found = false;
+      for (var scanResult in newScanResult) {
+        if (_matchedStringAndPosition(element.scanResult, scanResult)) {
+          found = true;
+          element.scanResult = scanResult;
+          element.upCounter();
+        }
+      }
+      if (!found) {
+        element.downCounter();
+      }
+
+      if (element.visible) {
+        matchedCounterListUpdated.add(element);
+      }
+    }
+    matchedCounterList = matchedCounterListUpdated;
+
+    /// On ajoute les nouvelles valeurs non connu dans matchedCounterList
+    for (var scanResult in newScanResult) {
       bool found = false;
       for (var element in matchedCounterList) {
-        if (_matchedStringAndPosition(element.scanResult, scanLine)) {
-          element.upCounter();
-          element.scanResult.block = scanLine.block;
-          element.scanResult.visible = true;
-          newProgressMatched.add(element);
+        if (_matchedStringAndPosition(element.scanResult, scanResult)) {
           found = true;
         }
       }
-      if (found == false) {
-        newProgressMatched.add(
+      if (!found) {
+        matchedCounterList.add(
           MatchedCounter(
-            scanResult: ScanResult(
-              block: scanLine.block,
-              visible: true,
-              validated: true,
-            ),
-            maxCorrelation: maxCorrelation,
+            scanResult: scanResult,
             validateCountCorrelation: validateCountCorrelation,
             color: color,
           ),
         );
       }
     }
-
-    for (var element in matchedCounterList) {
-      bool found = false;
-      for (var scanLine in tempMatched) {
-        if (_matchedStringAndPosition(scanLine, element.scanResult)) {
-          found = true;
-        }
-      }
-      if (found == false) {
-        element.downCounter();
-        newProgressMatched.add(element);
-      }
-    }
-
-    for (var element in newProgressMatched) {
-      if (element.counter >= validateCountCorrelation) {
-        matchedCounterList.removeWhere(
-          (counterMatch) => _matchedStringAndPosition(
-            counterMatch.scanResult,
-            element.scanResult,
-          ),
-        );
-        element.scanResult.validated = true;
-        matchedCounterList.add(element);
-      } else if (element.counter >= 0) {
-        matchedCounterList.removeWhere(
-          (counterMatch) => _matchedStringAndPosition(
-            counterMatch.scanResult,
-            element.scanResult,
-          ),
-        );
-        element.scanResult.validated = false;
-        matchedCounterList.add(element);
-      } else {
-        matchedCounterList.removeWhere(
-          (counterMatch) => _matchedStringAndPosition(
-            counterMatch.scanResult,
-            element.scanResult,
-          ),
-        );
-      }
-    }
-
     _busyGenerated = false;
     return matchedCounterList;
   }
