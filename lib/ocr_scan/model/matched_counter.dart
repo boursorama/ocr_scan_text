@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:ocr_scan_text/ocr_scan/model/scan_result.dart';
@@ -6,28 +7,45 @@ class MatchedCounter {
   ScanResult scanResult;
   int _counter = 1;
   int validateCountCorrelation;
-  int maxCorrelation;
   int get counter => _counter;
   Color color;
+  bool visible = false;
+  bool validated = false;
 
   MatchedCounter({
     required this.scanResult,
-    required this.maxCorrelation,
     required this.validateCountCorrelation,
     required this.color,
   }) {
-    _counter = validateCountCorrelation;
+    _updateState();
+  }
+
+  int get maxCorrelation {
+    return max(validateCountCorrelation * 2, 5);
+  }
+
+  void _updateState() {
+    if (_counter < 0) {
+      visible = false;
+    } else {
+      visible = true;
+    }
+
+    if (_counter < validateCountCorrelation) {
+      validated = false;
+    } else {
+      validated = true;
+    }
   }
 
   void downCounter() {
-    _counter = _counter - 1;
+    _counter--;
+    _updateState();
   }
 
   void upCounter() {
-    _counter = _counter + 3;
-    if (_counter >= maxCorrelation) {
-      _counter = maxCorrelation;
-    }
+    _counter = min(_counter + 1, maxCorrelation);
+    _updateState();
   }
 
   double progressCorrelation() {
@@ -37,7 +55,7 @@ class MatchedCounter {
 
   Color actualColor() {
     double progress = progressCorrelation();
-    return progress == 100 && scanResult.validated
+    return progress == 100 && validated
         ? color
         : Color.lerp(
               color.withOpacity(0.0),

@@ -238,7 +238,8 @@ class TextBlockHelper {
     return listTextElement;
   }
 
-  static List<BrsTextElement> combineBetweenTextElement(BrsTextElement startElement, BrsTextElement endElement, List<BrsTextBlock> blocks) {
+  static List<BrsTextElement> combineBetweenTextElement(
+      BrsTextElement startElement, BrsTextElement endElement, List<BrsTextBlock> blocks) {
     List<BrsTextElement> listTextElement = [startElement];
 
     bool asNext = true;
@@ -250,13 +251,9 @@ class TextBlockHelper {
       if (asNext && nextElement!.text == endElement!.text) {
         asNext = false;
       }
-
     }
     return listTextElement;
   }
-
-
-
 
   /// Permet de récupérer le block de texte le plus grand
   static BrsTextBlock? _findPrimaryBlock(List<BrsTextBlock> allBlocks) {
