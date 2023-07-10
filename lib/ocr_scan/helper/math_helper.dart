@@ -47,4 +47,9 @@ class MathHelper {
 
     return blockAngle;
   }
+
+  /// Determine si une valeur est comprise entre 2
+  static bool isBetween(num value, num from, num to) {
+    return from < value && value < to;
+  }
 }

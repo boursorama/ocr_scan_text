@@ -30,10 +30,7 @@ class ScanResult {
       topLeftOffset: Offset(left, top),
       bottomLeftOffset: Offset(left, bottom),
       topRightOffset: Offset(right, top),
-      bottomRightOffset: Offset(
-        right,
-        bottom,
-      ),
+      bottomRightOffset: Offset(right, bottom),
     );
   }
 
@@ -53,13 +50,30 @@ class ScanResult {
   }
 
   Trapezoid get trapezoid {
+    if (scannedElementList.isEmpty) {
+      return Trapezoid(
+        bottomLeftOffset: Offset.zero,
+        bottomRightOffset: Offset.zero,
+        topLeftOffset: Offset.zero,
+        topRightOffset: Offset.zero,
+      );
+    }
+
     List<Offset> offsets = [];
     for (BrsTextElement element in scannedElementList) {
       offsets.add(element.trapezoid.topLeftOffset);
-      offsets.add(element.trapezoid.topRightOffset);
       offsets.add(element.trapezoid.bottomRightOffset);
+      offsets.add(element.trapezoid.topRightOffset);
       offsets.add(element.trapezoid.bottomLeftOffset);
     }
     return _findTrapezoid(offsets);
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ScanResult && runtimeType == other.runtimeType && cleanedText == cleanedText && trapezoid == trapezoid;
+
+  @override
+  int get hashCode => cleanedText.hashCode ^ trapezoid.hashCode;
 }
