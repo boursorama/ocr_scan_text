@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:ocr_scan_text/ocr_scan/helper/math_helper.dart';
 
 import '../model/matched_counter.dart';
 import '../model/recognizer_text/text_block.dart';
@@ -47,11 +48,11 @@ abstract class ScanModule {
     ScanResult oldScanLine,
   ) {
     if (newScanLine.cleanedText == oldScanLine.cleanedText) {
-      if (_isBetween(
+      if (MathHelper.isBetween(
               newScanLine.trapezoid.topLeftOffset.dx,
               oldScanLine.trapezoid.topLeftOffset.dx - distanceCorrelation,
               oldScanLine.trapezoid.topLeftOffset.dx + distanceCorrelation) &&
-          _isBetween(
+          MathHelper.isBetween(
               newScanLine.trapezoid.topLeftOffset.dy,
               oldScanLine.trapezoid.topLeftOffset.dy - distanceCorrelation,
               oldScanLine.trapezoid.topLeftOffset.dy + distanceCorrelation)) {
@@ -93,9 +94,9 @@ abstract class ScanModule {
       text,
     );
 
-    /// On met a jour les counter de visibilité des objets MatchedCounter :
-    /// - Si toujours présent dans la nouvelle liste, on up
-    /// - Si non présent, on down et on supprime si plus visible
+    /// On met a jour les compteur de visibilité des objets MatchedCounter :
+    /// - Si toujours présent dans la nouvelle liste, on up le compteur
+    /// - Si non présent, on down le compteur et on supprime si plus visible
     List<MatchedCounter> matchedCounterListUpdated = [];
     for (var element in matchedCounterList) {
       bool found = false;
@@ -136,9 +137,5 @@ abstract class ScanModule {
     }
     _busyGenerated = false;
     return matchedCounterList;
-  }
-
-  bool _isBetween(num value, num from, num to) {
-    return from < value && value < to;
   }
 }

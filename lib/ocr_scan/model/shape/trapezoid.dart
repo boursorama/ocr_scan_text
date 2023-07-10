@@ -147,4 +147,18 @@ class Trapezoid {
         return y * size.height / absoluteImageSize.height;
     }
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Trapezoid &&
+          runtimeType == other.runtimeType &&
+          topLeftOffset == other.topLeftOffset &&
+          topRightOffset == other.topRightOffset &&
+          bottomRightOffset == other.bottomRightOffset &&
+          bottomLeftOffset == other.bottomLeftOffset;
+
+  @override
+  int get hashCode =>
+      topLeftOffset.hashCode ^ topRightOffset.hashCode ^ bottomRightOffset.hashCode ^ bottomLeftOffset.hashCode;
 }
