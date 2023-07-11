@@ -100,10 +100,12 @@ class ScanWidgetState<T extends ScanWidget> extends State<T> {
           .map<ScanResult>((e) => e.scanResult)
           .toList();
 
-      widget.matchedResult(
-        key,
-        list,
-      );
+      if (list.isNotEmpty) {
+        widget.matchedResult(
+          key,
+          list,
+        );
+      }
     });
 
     if (!converting) {
