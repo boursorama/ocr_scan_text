@@ -28,7 +28,7 @@ class TextBlockHelper {
     List<List<BrsTextElement>> listScannedText = [];
     String text = '';
     for (var textElement in textElements) {
-      text += textElement == textElements.first ? textElement.text : ' ${textElement.text}';
+      text += textElement.text;
     }
 
     List<RegExpMatch> matchs = regExp.allMatches(text).toList();
