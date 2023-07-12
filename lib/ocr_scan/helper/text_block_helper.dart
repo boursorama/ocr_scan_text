@@ -93,7 +93,7 @@ class TextBlockHelper {
   ///     Result : BrsTextElement = ['?']
   ///
   static BrsTextElement? nextTextElement(
-    BrsTextElement startElement,
+    List<BrsTextElement> startElements,
     List<BrsTextBlock> blocks,
     HorizontalDirection direction,
   ) {
@@ -112,9 +112,9 @@ class TextBlockHelper {
     );
 
     Offset startPoint = Offset(
-      startElement.trapezoid.topLeftOffset.dx,
-      startElement.trapezoid.topLeftOffset.dy +
-          (startElement.trapezoid.bottomLeftOffset.dy - startElement.trapezoid.topLeftOffset.dy) / 2,
+      startElements.last.trapezoid.topLeftOffset.dx,
+      startElements.last.trapezoid.topLeftOffset.dy +
+          (startElements.last.trapezoid.bottomLeftOffset.dy - startElements.last.trapezoid.topLeftOffset.dy) / 2,
     );
 
     // 1000 est un nombre arbitraire, on cherche juste a faire une grande ligne
@@ -132,13 +132,16 @@ class TextBlockHelper {
     for (BrsTextBlock block in blocks) {
       for (BrsTextLine line in block.lines) {
         for (BrsTextElement element in line.elements) {
-          /// On evite les doublons
-          bool duplicatedValue = false;
-          if (startElement.trapezoid.topLeftOffset == element.trapezoid.topLeftOffset) {
-            duplicatedValue = true;
+          bool duplicated = false;
+          for (BrsTextElement startElement in startElements) {
+            if (startElement.trapezoid.topLeftOffset == element.trapezoid.topLeftOffset) {
+              print("duplicated ${startElement.text}");
+              duplicated = true;
+              continue;
+            }
           }
 
-          if (duplicatedValue) {
+          if (duplicated) {
             continue;
           }
           if (MathHelper.doSegmentsIntersect(
@@ -170,14 +173,14 @@ class TextBlockHelper {
     bool asNext = true;
 
     while (asNext) {
-      BrsTextElement? nextElement = nextTextElement(listTextElement.last, blocks, HorizontalDirection.left);
+      BrsTextElement? nextElement = nextTextElement(listTextElement, blocks, HorizontalDirection.left);
       nextElement == null ? asNext = false : listTextElement.add(nextElement);
     }
     listTextElement = listTextElement.reversed.toList();
     asNext = true;
 
     while (asNext) {
-      BrsTextElement? nextElement = nextTextElement(listTextElement.last, blocks, HorizontalDirection.right);
+      BrsTextElement? nextElement = nextTextElement(listTextElement, blocks, HorizontalDirection.right);
       nextElement == null ? asNext = false : listTextElement.add(nextElement);
     }
 
@@ -212,7 +215,7 @@ class TextBlockHelper {
     bool asNext = true;
 
     while (asNext) {
-      BrsTextElement? nextElement = nextTextElement(listTextElement.last, blocks, HorizontalDirection.left);
+      BrsTextElement? nextElement = nextTextElement(listTextElement, blocks, HorizontalDirection.left);
       nextElement == null ? asNext = false : listTextElement.add(nextElement);
     }
     return listTextElement.reversed.toList();
@@ -232,7 +235,7 @@ class TextBlockHelper {
     bool asNext = true;
 
     while (asNext) {
-      BrsTextElement? nextElement = nextTextElement(listTextElement.last, blocks, HorizontalDirection.right);
+      BrsTextElement? nextElement = nextTextElement(listTextElement, blocks, HorizontalDirection.right);
       nextElement == null ? asNext = false : listTextElement.add(nextElement);
     }
     return listTextElement;
@@ -245,7 +248,7 @@ class TextBlockHelper {
     bool asNext = true;
 
     while (asNext) {
-      BrsTextElement? nextElement = nextTextElement(listTextElement.last, blocks, HorizontalDirection.right);
+      BrsTextElement? nextElement = nextTextElement(listTextElement, blocks, HorizontalDirection.right);
       nextElement == null ? asNext = false : listTextElement.add(nextElement);
 
       if (asNext && nextElement!.text == endElement!.text) {
