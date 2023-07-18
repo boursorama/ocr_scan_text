@@ -135,7 +135,6 @@ class TextBlockHelper {
           bool duplicated = false;
           for (BrsTextElement startElement in startElements) {
             if (startElement.trapezoid.topLeftOffset == element.trapezoid.topLeftOffset) {
-              print("duplicated ${startElement.text}");
               duplicated = true;
               continue;
             }
