@@ -10,11 +10,8 @@ Il permet de faciliter la recherche précise de texte et l'affichage des résult
 Permet de numérisez facilement le texte à partir de la caméra, d'extraire des résultats précis et les afficher à l'utilisateur.
 
 Les résultats sont renvoyé par liste de Block.
-
 Un Block contient : le texte global du block, une liste de Line et la position.
-
 Une Line contient : le texte global de la line, une liste d'Element et la position.
-
 Un Element contient : un mot et la position.
 
 <p float="left">
@@ -25,20 +22,20 @@ Note: La librairie utilise le package de [Camera](https://pub.dev/packages/camer
 
 ## Usage
 
-### Ajouter le package dans pubspec.yaml :
+#### Ajouter le package dans pubspec.yaml :
 
 ```dart
 dependencies:
   ocr_scan_text: x.x.x
 ```
 
-### Pour utiliser la librairie, importer : 
+#### Pour utiliser la librairie, importer : 
 
 ```dart
 import 'package:ocr_scan_text/ocr_scan_text.dart';
 ```
 
-### Pour afficher le widget de detection de texte :
+#### Pour afficher le widget de detection de texte :
 
 ```dart
 LiveScanWidget(
@@ -50,7 +47,7 @@ LiveScanWidget(
 Un LiveScanWidget a besoin d'une liste de module pour commencer la detection. 
 Les résultats validé seront renvoyé a la methode "matchedResult".
 
-### Créer un module de scan : 
+#### Créer un module de scan : 
 
 Dans cette exemple (voir le dossier `/example`), nous consideront que tous les Elements sont des résultats.
 
@@ -60,9 +57,9 @@ class ScanAllModule extends ScanModule
 ```
 
 Le constructeur d'un module définit :
-    - label : Un label (optionnel) qui sera affiché à l'utilisateur lors du rendu
-    - color : Une couleur (optionnel) qui sera utilisé pour le rendu
-    - validateCountCorrelation : Le nombre de fois qu'il faut trouver le même résultat au même endroit pour qu'il soit valide. ( Comme la camera bouge certain chiffre / lettre peuvent être mal intépreter sur plusieurs frame ).
+- label : Un label (optionnel) qui sera affiché à l'utilisateur lors du rendu 
+- color : Une couleur (optionnel) qui sera utilisé pour le rendu 
+- validateCountCorrelation : Le nombre de fois qu'il faut trouver le même résultat au même endroit pour qu'il soit valide. ( Comme la camera bouge certain chiffre / lettre peuvent être mal intépreter sur plusieurs frame ).
 ```dart
 ScanAllModule() : super(label: 'All',color: Colors.redAccent.withOpacity(0.3), validateCountCorrelation: 1);
 ```
@@ -84,13 +81,13 @@ Future<List<ScanResult>> matchedResult(List<BrsTextBlock> textBlock, String text
 }
 ```
 
-Pour demarrer un module : 
+#### Pour demarrer un module : 
 
 ```dart
 monModule.start();
 ```
 
-Pour arreter un module :
+#### Pour arreter un module :
 
 ```dart
 monModule.stop();
