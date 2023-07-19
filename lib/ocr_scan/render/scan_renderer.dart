@@ -8,9 +8,15 @@ import '../model/matched_counter.dart';
 import '../model/shape/trapezoid.dart';
 import '../module/scan_module.dart';
 
+/// Permet de dessiner le rendu de tous les résultat trouvé dans l'image
 class ScanRenderer extends CustomPainter {
+  /// Map contenant chaque module et la liste des resultats associés
   final Map<ScanModule, List<MatchedCounter>> mapScanModules;
+
+  /// Permet d'orienté le rendu suivant l'angle de l'image
   final InputImageRotation imageRotation;
+
+  /// Permet d'adapter la taille du rendu suivant la taille de l'image
   final Size imageSize;
   ScanRenderer({
     required this.mapScanModules,
@@ -18,15 +24,52 @@ class ScanRenderer extends CustomPainter {
     required this.imageSize,
   });
 
+  Canvas _setCanvasPosition(
+    Canvas canvas,
+    Size size,
+    Trapezoid trapezoid,
+  ) {
+    /// On reset le canvas
+    canvas.saveLayer(Offset.zero & size, Paint());
+
+    /// On positionne le canvas au topLeft du résultat trouvé
+    canvas.translate(
+      trapezoid.topLeftOffset.dx < trapezoid.bottomLeftOffset.dx
+          ? trapezoid.topLeftOffset.dx
+          : trapezoid.bottomLeftOffset.dx,
+      trapezoid.topLeftOffset.dy.toDouble(),
+    );
+
+    /// On calcul l'angle entre le topLeftOffset et le topRightOffset
+    double angle = calculateAngle(
+      Offset(
+        trapezoid.topLeftOffset.dx.toDouble(),
+        trapezoid.topLeftOffset.dy.toDouble(),
+      ),
+      Offset(
+        trapezoid.topRightOffset.dx.toDouble(),
+        trapezoid.topRightOffset.dy.toDouble(),
+      ),
+    );
+
+    /// On tourne le canvas avec l'angle trouvé
+    canvas.rotate(angle * (pi / 180));
+    return canvas;
+  }
+
   @override
   void paint(Canvas canvas, Size size) {
+    /// On parcours la liste de tous les modules pour afficher le résultat
     mapScanModules.forEach(
       (module, matchedCounterList) {
         for (MatchedCounter matchedCount in matchedCounterList) {
           if (!matchedCount.visible) {
+            /// Si le résultat n'est pas visible on ne fait rien
             continue;
           }
 
+          /// On redimensionne le Trapezoid du résultat pour l'adapter a la taille de la preview de la camera
+          /// ( On ajoute une petite marge pour que le rendu ne cache pas le résultat )
           double marge = 8;
           Trapezoid trapezoid = matchedCount.scanResult.trapezoid.resizedTrapezoid(
             size,
@@ -36,13 +79,9 @@ class ScanRenderer extends CustomPainter {
             marge,
           );
 
-          canvas.saveLayer(Offset.zero & size, Paint());
-          canvas.translate(
-            trapezoid.topLeftOffset.dx < trapezoid.bottomLeftOffset.dx
-                ? trapezoid.topLeftOffset.dx
-                : trapezoid.bottomLeftOffset.dx,
-            trapezoid.topLeftOffset.dy.toDouble(),
-          );
+          canvas = _setCanvasPosition(canvas, size, trapezoid);
+
+          /// On calcul l'angle entre le topLeftOffset et le topRightOffset
           double angle = calculateAngle(
             Offset(
               trapezoid.topLeftOffset.dx.toDouble(),
@@ -53,7 +92,6 @@ class ScanRenderer extends CustomPainter {
               trapezoid.topRightOffset.dy.toDouble(),
             ),
           );
-          canvas.rotate(angle * (pi / 180));
 
           /// Calcul de la width selon le ratio width / angle.
           double lerp = lerpDouble(
@@ -63,8 +101,10 @@ class ScanRenderer extends CustomPainter {
               ) ??
               1;
 
+          /// Width calculé à partir de l'angle modifié du canvas
           double width = (trapezoid.topRightOffset.dx - trapezoid.topLeftOffset.dx) * lerp;
 
+          /// Height calculé à partir de l'angle modifié du canvas
           double height = trapezoid.bottomRightOffset.dy - trapezoid.topRightOffset.dy;
           if (trapezoid.bottomLeftOffset.dy - trapezoid.topLeftOffset.dy > height) {
             height = trapezoid.bottomLeftOffset.dy - trapezoid.topLeftOffset.dy;
@@ -96,7 +136,7 @@ class ScanRenderer extends CustomPainter {
               moduleLabel,
               module.color,
             );
-          } else {
+          } else if (!matchedCount.validated) {
             Paint paint = Paint()
               ..color = matchedCount.actualColor()
               ..style = PaintingStyle.fill
@@ -125,6 +165,7 @@ class ScanRenderer extends CustomPainter {
     );
   }
 
+  /// Dessine le nom du module, si on en a un, autour du résultat trouvé
   void _paintLabel(
     Canvas canvas,
     String label,
@@ -174,6 +215,7 @@ class ScanRenderer extends CustomPainter {
     );
   }
 
+  /// Retourne l'angle de deux Offset
   double calculateAngle(Offset point1, Offset point2) {
     double deltaX = point2.dx - point1.dx;
     double deltaY = point2.dy - point1.dy;

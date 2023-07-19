@@ -1,3 +1,4 @@
+/// TODO : A mettre a jour et corriger les défauts d'orientation
 /*import 'dart:io';
 import 'dart:typed_data';
 

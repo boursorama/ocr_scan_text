@@ -5,6 +5,7 @@ import 'package:ocr_scan_text/ocr_scan/model/recognizer_text/recognizer_text.dar
 
 import '../shape/trapezoid.dart';
 
+/// Permet de représenté un objet TextElement de MlKit
 class BrsTextElement extends BrsRecognizerText {
   BrsTextElement({
     required String text,

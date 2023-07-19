@@ -51,7 +51,7 @@ class TextBlockHelper {
     return listScannedText;
   }
 
-  /// Supprime les TextElements correspondant au texte
+  /// Supprime les TextElements de la liste correspondant au texte
   /// Ex :
   ///
   ///     List<BrsTextElement> elementList = ['Ca','va','comment','?','Ca', 'va', 'bien', '!'];
@@ -83,7 +83,7 @@ class TextBlockHelper {
     return elementList;
   }
 
-  /// Retourne le prochain BrsTextElement a gauche ou a droite
+  /// Retourne le prochain BrsTextElement a gauche ou a droite de "startElement"
   /// Ex :
   /// Pour simplifier, on considére que tous les block sont dans l'ordre et sur la meme ligne.
   ///
@@ -100,12 +100,14 @@ class TextBlockHelper {
     double angle;
 
     /// C'est assez compliqué d'obtenir l angle du texte/document
-    /// La valeur n'est pas du tout précise
-    /// TODO : Si le plus gros block n'est pas dans le meme angle que startElement, ca ne marche pas
+    /// La valeur n'est pas du forcement très précise
     Trapezoid? primaryTrapezoid = _findPrimaryBlock(blocks)?.trapezoid;
     if (primaryTrapezoid == null) {
       return null;
     }
+
+    /// TODO : Si le plus gros block n'est pas dans le meme angle que startElement, ca ne marche pas.
+    /// TODO : Ce cas ne devrait pas arriver
     angle = MathHelper.retrieveAngle(
       primaryTrapezoid.topLeftOffset,
       primaryTrapezoid.topRightOffset,
@@ -157,12 +159,12 @@ class TextBlockHelper {
     return null;
   }
 
-  /// Retourne une BrsTextLine qui est ligne compléte crée a partir d'un TextElement
+  /// Retourne une BrsTextLine qui est ligne compléte en combinant tous les TextElement a droite et a gauche se trouvant
+  /// sur la même ligne que le "startElement", avec "startElement" compris.
   /// Ex :
   /// Pour simplifier, on considére que tous les block sont dans l'ordre et sur la meme ligne.
   ///
   ///     List<BrsTextBlock> blocks = [['Ca','va','comment']['?']['Ca', 'va', 'bien', '!']];
-  ///     HorizontalDirection direction = HorizontalDirection.right;
   ///     BrsTextElement startElement = '?';
   ///     Result : BrsTextElement = ['Ca','va','comment','?','Ca', 'va','bien', '!']
   ///
@@ -201,6 +203,7 @@ class TextBlockHelper {
   }
 
   /// Retourne une Liste de BrsTextElement avec tout les BrsTextElement a gauche de startElement
+  /// avec startElement compris.
   /// Ex :
   /// Pour simplifier, on considére que tous les block sont dans l'ordre et sur la meme ligne.
   ///
@@ -257,7 +260,7 @@ class TextBlockHelper {
     return listTextElement;
   }
 
-  /// Permet de récupérer le block de texte le plus grand
+  /// Retourne le block de texte "principale" (le plus grand)
   static BrsTextBlock? _findPrimaryBlock(List<BrsTextBlock> allBlocks) {
     BrsTextBlock? longTextBlock;
     for (var block in allBlocks) {
