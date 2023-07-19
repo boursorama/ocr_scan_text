@@ -6,6 +6,7 @@ import 'package:ocr_scan_text/ocr_scan/model/recognizer_text/text_line.dart';
 
 import '../shape/trapezoid.dart';
 
+/// Permet de représenté un objet TextBlock de MlKit
 class BrsTextBlock extends BrsRecognizerText {
   final List<BrsTextLine> lines;
 

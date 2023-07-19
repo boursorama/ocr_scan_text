@@ -6,7 +6,9 @@ import 'package:flutter/services.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:ocr_scan_text/ocr_scan/widget/scan_widget.dart';
 
+/// Widget permetant le Scan en "live" a l'aide de la camera
 class LiveScanWidget extends ScanWidget {
+  /// On respecte le ratio de la camera pour l'affichage de la preview
   final bool respectRatio;
   const LiveScanWidget({
     super.key,
@@ -35,6 +37,7 @@ class LiveScanWidgetState extends ScanWidgetState<LiveScanWidget> {
     super.dispose();
   }
 
+  /// On affiche le widget de la camera des que celui-ci est pret
   @override
   Widget build(BuildContext context) {
     return _controller == null || _controller?.value == null || _controller?.value.isInitialized == false
@@ -42,16 +45,18 @@ class LiveScanWidgetState extends ScanWidgetState<LiveScanWidget> {
         : _cameraWidget();
   }
 
-  // Body of live camera stream
+  /// Widget de la camera affichant la preview
   Widget _cameraWidget() {
     final CameraController? cameraController = _controller;
     cameraController?.lockCaptureOrientation(DeviceOrientation.portraitUp);
 
     if (cameraController == null || !cameraController.value.isInitialized) {
-      return const Text('Tap a camera');
+      return Container();
     } else {
       final size = MediaQuery.of(context).size;
       CustomPaint? customPaint = this.customPaint;
+
+      /// Preview de la camera
       CameraPreview preview = CameraPreview(
         cameraController,
         child: customPaint == null
@@ -80,35 +85,7 @@ class LiveScanWidgetState extends ScanWidgetState<LiveScanWidget> {
     }
   }
 
-  // Start camera stream function
-  Future _startCamera() async {
-    _cameras = await availableCameras();
-    _controller = CameraController(_cameras[0], ResolutionPreset.max);
-    final camera = _cameras[0];
-    _controller = CameraController(
-      camera,
-      ResolutionPreset.high,
-      enableAudio: false,
-    );
-    _controller?.initialize().then((_) {
-      if (!mounted) {
-        return;
-      }
-      _controller?.startImageStream(_processCameraImage);
-      setState(() {});
-    }).catchError((Object e) {
-      if (e is CameraException) {
-        switch (e.code) {
-          case 'CameraAccessDenied':
-            break;
-          default:
-            break;
-        }
-      }
-    });
-  }
-
-  // Process image from camera stream
+  /// Lance l'analyse de l'image
   Future _processCameraImage(CameraImage image) async {
     final WriteBuffer allBytes = WriteBuffer();
     for (final Plane plane in image.planes) {
@@ -160,17 +137,35 @@ class LiveScanWidgetState extends ScanWidgetState<LiveScanWidget> {
     );
   }
 
-  // Obtention des informations d'orientation de la caméra
-  int getCameraOrientation() {
-    CameraController? controller = _controller;
-    if (controller == null || !controller.value.isInitialized) {
-      return 0;
-    }
-
-    return controller.description.sensorOrientation;
+  /// Demarrage de la camera
+  Future _startCamera() async {
+    _cameras = await availableCameras();
+    _controller = CameraController(_cameras[0], ResolutionPreset.max);
+    final camera = _cameras[0];
+    _controller = CameraController(
+      camera,
+      ResolutionPreset.high,
+      enableAudio: false,
+    );
+    _controller?.initialize().then((_) {
+      if (!mounted) {
+        return;
+      }
+      _controller?.startImageStream(_processCameraImage);
+      setState(() {});
+    }).catchError((Object e) {
+      if (e is CameraException) {
+        switch (e.code) {
+          case 'CameraAccessDenied':
+            break;
+          default:
+            break;
+        }
+      }
+    });
   }
 
-  // Stop camera live stream
+  /// Arret de la camera
   Future _stopCamera() async {
     await _controller?.stopImageStream();
     await _controller?.dispose();

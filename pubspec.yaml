@@ -1,10 +1,9 @@
 name: ocr_scan_text
-description: A new Flutter plugin project.
-version: 0.0.1
+version: 1.0.0
 homepage:
 
 environment:
-  sdk: '>=2.19.6 <3.0.0'
+  sdk: '>=2.18.1 <3.0.0'
   flutter: ">=2.5.0"
 
 dependencies:
@@ -13,7 +12,7 @@ dependencies:
   plugin_platform_interface: ^2.0.2
   google_mlkit_text_recognition: ^0.8.1
   camera: ^0.10.2+1
-  image: ^4.0.17
+
 
 dev_dependencies:
   flutter_test:

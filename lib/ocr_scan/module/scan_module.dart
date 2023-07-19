@@ -8,17 +8,31 @@ import '../model/scan_result.dart';
 
 abstract class ScanModule {
   /// Determine la distance a la quel un objet peut etre identifié comme un étant le meme (La camera se déplace)
+  ///  - Si distanceCorrelation est trop petite, cela va invalider les anciens
+  ///    résultats au moindre mouvement de camera.
+  ///  - Si distanceCorrelation est trop grande, des résultats similaires a des positions différentes
+  ///    peuvent être confondu.
+  /// La valeur est a adapter selon ce qu'on cherche à faire.
   double distanceCorrelation;
 
+  /// Determine le nombre minimum de fois ou on doit trouvé le même résultat au même endroit pour valider
+  /// le résultat. ( Doit être > 0 )
   int validateCountCorrelation;
 
+  /// Determine si le module est démarré ou arreté
   bool _started = false;
-  bool _busyGenerated = false;
   bool get started => _started;
 
+  /// Si le module est déjà en cours d'utilisation, l'image ne sera pas traité
+  bool _busyGenerated = false;
+
+  /// Liste des résultats trouvé par le module
   List<MatchedCounter> matchedCounterList = [];
 
+  /// Nom du module ( Le nom sera affiché dans le rendu final )
   String? label;
+
+  /// Couleur du module ( la couleur sera affiché dans le rendu final )
   Color color;
 
   ScanModule({
@@ -30,19 +44,25 @@ abstract class ScanModule {
     assert(validateCountCorrelation > 0);
   }
 
+  /// Démarre le module
   void start() {
     _started = true;
   }
 
+  /// Arret du module
   void stop() {
     _started = false;
   }
 
+  /// Chaque module doit retourner une List de ScanResult contenant tous les résultats trouvé
   Future<List<ScanResult>> matchedResult(
     List<BrsTextBlock> textBlock,
     String text,
   );
 
+  /// Permet de determiner si un résultat est le même
+  /// Il faut qu'il ai le même texte et la même position
+  /// On considére que le position est la même si elle est comprise entre -distanceCorrelation et +distanceCorrelation
   bool _matchedStringAndPosition(
     ScanResult newScanLine,
     ScanResult oldScanLine,
@@ -62,6 +82,7 @@ abstract class ScanModule {
     return false;
   }
 
+  /// On converti les TextBlock de MLKit en BrsTextBlock pour faire abstraction de MLKit
   List<BrsTextBlock> _convertTextBlocks(
     List<TextBlock> textBlock,
     Size imageSize,
@@ -76,7 +97,9 @@ abstract class ScanModule {
     return brsTextBlock;
   }
 
-  Future<List<MatchedCounter>> generateScanLines(
+  /// Lance la recherche de résulat du module puis met a jour la liste
+  /// des anciens résultats ( MatchedCounter )
+  Future<List<MatchedCounter>> generateResult(
     List<TextBlock> textBlock,
     String text,
     Size imageSize,
