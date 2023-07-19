@@ -10,9 +10,9 @@ Il permet de faciliter la recherche précise de texte et l'affichage des résult
 Permet de numérisez facilement le texte à partir de la caméra, d'extraire des résultats précis et les afficher à l'utilisateur.
 
 Les résultats sont renvoyé par liste de Block.
-Un Block contient : le texte global du block, une liste de Line et la position.
-Une Line contient : le texte global de la line, une liste d'Element et la position.
-Un Element contient : un mot et la position.
+- Un Block contient : le texte global du block, une liste de Line et la position. 
+- Une Line contient : le texte global de la line, une liste d'Element et la position. 
+- Un Element contient : un mot et la position.
 
 <p float="left">
   <img src="https://developers.google.com/static/ml-kit/vision/text-recognition/images/text-structure.png" width="600" />
