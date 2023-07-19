@@ -10,8 +10,11 @@ Il permet de faciliter la recherche précise de texte et l'affichage des résult
 Permet de numérisez facilement le texte à partir de la caméra, d'extraire des résultats précis et les afficher à l'utilisateur.
 
 Les résultats sont renvoyé par liste de Block.
+
 Un Block contient : le texte global du block, une liste de Line et la position.
+
 Une Line contient : le texte global de la line, une liste d'Element et la position.
+
 Un Element contient : un mot et la position.
 
 <p float="left">
@@ -22,20 +25,20 @@ Note: La librairie utilise le package de [Camera](https://pub.dev/packages/camer
 
 ## Usage
 
-###Ajouter le package dans pubspec.yaml :
+### Ajouter le package dans pubspec.yaml :
 
 ```dart
 dependencies:
   ocr_scan_text: x.x.x
 ```
 
-###Pour utiliser la librairie, importer : 
+### Pour utiliser la librairie, importer : 
 
 ```dart
 import 'package:ocr_scan_text/ocr_scan_text.dart';
 ```
 
-###Pour afficher le widget de detection de texte :
+### Pour afficher le widget de detection de texte :
 
 ```dart
 LiveScanWidget(
@@ -47,7 +50,7 @@ LiveScanWidget(
 Un LiveScanWidget a besoin d'une liste de module pour commencer la detection. 
 Les résultats validé seront renvoyé a la methode "matchedResult".
 
-###Créer un module de scan : 
+### Créer un module de scan : 
 
 Dans cette exemple (voir le dossier `/example`), nous consideront que tous les Elements sont des résultats.
 
