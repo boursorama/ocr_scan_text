@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -50,10 +51,14 @@ class LiveScanWidgetState extends ScanWidgetState<LiveScanWidget> {
     final CameraController? cameraController = _controller;
     cameraController?.lockCaptureOrientation(DeviceOrientation.portraitUp);
 
+    final size = MediaQuery.of(context).size;
     if (cameraController == null || !cameraController.value.isInitialized) {
-      return Container();
+      return Container(
+        width: size.width,
+        height: size.height,
+        color: Colors.black,
+      );
     } else {
-      final size = MediaQuery.of(context).size;
       CustomPaint? customPaint = this.customPaint;
 
       /// Preview de la camera
@@ -139,6 +144,9 @@ class LiveScanWidgetState extends ScanWidgetState<LiveScanWidget> {
 
   /// Demarrage de la camera
   Future _startCamera() async {
+    if (!Platform.isAndroid && !Platform.isIOS) {
+      return;
+    }
     _cameras = await availableCameras();
     _controller = CameraController(_cameras[0], ResolutionPreset.max);
     final camera = _cameras[0];
@@ -167,6 +175,9 @@ class LiveScanWidgetState extends ScanWidgetState<LiveScanWidget> {
 
   /// Arret de la camera
   Future _stopCamera() async {
+    if (!Platform.isAndroid && !Platform.isIOS) {
+      return;
+    }
     await _controller?.stopImageStream();
     await _controller?.dispose();
     _controller = null;
