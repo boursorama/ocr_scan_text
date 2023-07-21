@@ -14,12 +14,12 @@ enum HorizontalDirection {
 }
 
 class TextBlockHelper {
-  /// Retourne les résultats de la regex sous forme de List<List<BrsTextElement>>
+  /// Return regex result as List<List<BrsTextElement>>
   /// Ex :
   ///
-  ///     List<BrsTextElement> elementList = ['Ca','va','comment','?','Ca','va', 'bien', '!'];
-  ///     RegExp regExp = RegExp(r'Ca va');
-  ///     Result : elementList = [['Ca','va']['Ca','va']]
+  ///     List<BrsTextElement> elementList = ['How', 'are', 'you', '?'];
+  ///     RegExp regExp = RegExp(r'are you');
+  ///     Result : elementList = ['are', 'you']
   ///
   static List<List<BrsTextElement>> extractTextElementsWithRegex(
     List<BrsTextElement> textElements,
@@ -28,7 +28,7 @@ class TextBlockHelper {
     List<List<BrsTextElement>> listScannedText = [];
     String text = '';
     for (var textElement in textElements) {
-      text += textElement.text;
+      text += '${textElements.first == textElement ? '' : ' '}${textElement.text}';
     }
 
     List<RegExpMatch> matchs = regExp.allMatches(text).toList();
@@ -37,28 +37,32 @@ class TextBlockHelper {
         continue;
       }
 
-      /// On reconstruit la liste des TextElements
+      /// Rebuild the new list of TextElements
       List<BrsTextElement> foundElements = [];
-      String matchString = text.substring(match.start, match.end);
-      for (BrsTextElement element in textElements) {
-        if (matchString.contains(element.text)) {
-          foundElements.add(element);
+      int elementBeforeMatch = text.substring(0, match.start).split('').where((char) => char == ' ').length;
+      int elementBetweenMatch =
+          text.substring(match.start, match.end).split('').where((char) => char == ' ').length + 1;
+
+      for (int i = 0; i < elementBetweenMatch; i++) {
+        if (elementBeforeMatch + i < textElements.length) {
+          foundElements.add(textElements[elementBeforeMatch + i]);
         }
       }
+
       listScannedText.add(foundElements);
     }
 
     return listScannedText;
   }
 
-  /// Supprime les TextElements de la liste correspondant au texte
+  /// Remove the TextElements from the list corresponding to the text
   /// Ex :
   ///
-  ///     List<BrsTextElement> elementList = ['Ca','va','comment','?','Ca', 'va', 'bien', '!'];
-  ///     String text = 'Ca va bien';
-  ///     Result : elementList = ['Ca','va','comment','?', '!']
+  ///     List<BrsTextElement> elementList =  ['How', 'are', 'you', '?'];
+  ///     String text = 'are you';
+  ///     Result : elementList = ['How','?']
   ///
-  List<BrsTextElement> removeTextElement(List<BrsTextElement> elementList, String text) {
+  static List<BrsTextElement> removeTextElement(List<BrsTextElement> elementList, String text) {
     for (int i = 0; i < elementList.length; i++) {
       String concatenation = elementList[i].text;
       if (concatenation == text) {
@@ -83,14 +87,13 @@ class TextBlockHelper {
     return elementList;
   }
 
-  /// Retourne le prochain BrsTextElement a gauche ou a droite de "startElement"
+  /// Return the next BrsTextElement to the left or right of "startElement"
   /// Ex :
-  /// Pour simplifier, on considére que tous les block sont dans l'ordre et sur la meme ligne.
   ///
-  ///     List<BrsTextBlock> blocks = [['Ca','va','comment']['?']['Ca', 'va', 'bien', '!']];
+  ///     List<BrsTextBlock> blocks =  ['How', 'are', 'you', '?'];
   ///     HorizontalDirection direction = HorizontalDirection.right;
-  ///     BrsTextElement startElement = 'comment';
-  ///     Result : BrsTextElement = ['?']
+  ///     BrsTextElement startElement = 'are';
+  ///     Result : BrsTextElement = ['you']
   ///
   static BrsTextElement? nextTextElement(
     List<BrsTextElement> startElements,
@@ -99,15 +102,13 @@ class TextBlockHelper {
   ) {
     double angle;
 
-    /// C'est assez compliqué d'obtenir l angle du texte/document
-    /// La valeur n'est pas du forcement très précise
     Trapezoid? primaryTrapezoid = _findPrimaryBlock(blocks)?.trapezoid;
     if (primaryTrapezoid == null) {
       return null;
     }
 
-    /// TODO : Si le plus gros block n'est pas dans le meme angle que startElement, ca ne marche pas.
-    /// TODO : Ce cas ne devrait pas arriver
+    /// TODO: If the biggest block is not in the same angle as startElement, it doesn't work.
+    /// TODO: This case should not happen
     angle = MathHelper.retrieveAngle(
       primaryTrapezoid.topLeftOffset,
       primaryTrapezoid.topRightOffset,
@@ -119,16 +120,10 @@ class TextBlockHelper {
           (startElements.last.trapezoid.bottomLeftOffset.dy - startElements.last.trapezoid.topLeftOffset.dy) / 2,
     );
 
-    // 1000 est un nombre arbitraire, on cherche juste a faire une grande ligne
+    // 1000 is an arbitrary number, we just want to make a big line
     Offset endPoint = Offset(
       startPoint.dx + (direction == HorizontalDirection.left ? -1000 : 1000) * cos(angle),
       startPoint.dy + (direction == HorizontalDirection.left ? -1000 : 1000) * sin(angle),
-    );
-
-    blocks.sort(
-      (a, b) => a.trapezoid.topLeftOffset.dx.compareTo(
-        b.trapezoid.topLeftOffset.dx,
-      ),
     );
 
     for (BrsTextBlock block in blocks) {
@@ -159,24 +154,61 @@ class TextBlockHelper {
     return null;
   }
 
-  /// Retourne une BrsTextLine qui est ligne compléte en combinant tous les TextElement a droite et a gauche se trouvant
-  /// sur la même ligne que le "startElement", avec "startElement" compris.
+  static List<BrsTextBlock> _sortTextBlock(List<BrsTextBlock> blocks, HorizontalDirection direction) {
+    if (direction == HorizontalDirection.right) {
+      blocks.sort(
+        (a, b) => a.trapezoid.topLeftOffset.dx.compareTo(
+          b.trapezoid.topLeftOffset.dx,
+        ),
+      );
+    } else {
+      blocks.sort(
+        (a, b) => b.trapezoid.topLeftOffset.dx.compareTo(
+          a.trapezoid.topLeftOffset.dx,
+        ),
+      );
+
+      for (var block in blocks) {
+        block.lines.sort(
+          (a, b) => b.trapezoid.topLeftOffset.dx.compareTo(
+            a.trapezoid.topLeftOffset.dx,
+          ),
+        );
+
+        for (var line in block.lines) {
+          line.elements.sort(
+            (a, b) => b.trapezoid.topLeftOffset.dx.compareTo(
+              a.trapezoid.topLeftOffset.dx,
+            ),
+          );
+        }
+      }
+    }
+
+    return blocks;
+  }
+
+  /// Return a BrsTextLine : It's full line by combining left and right all TextElement on the same line
+  /// of "startElement", including "startElement".
   /// Ex :
-  /// Pour simplifier, on considére que tous les block sont dans l'ordre et sur la meme ligne.
   ///
-  ///     List<BrsTextBlock> blocks = [['Ca','va','comment']['?']['Ca', 'va', 'bien', '!']];
-  ///     BrsTextElement startElement = '?';
-  ///     Result : BrsTextElement = ['Ca','va','comment','?','Ca', 'va','bien', '!']
+  ///     List<BrsTextBlock> blocks =  [['How', 'are', 'you', '?']['Welcome', '!']];
+  ///     BrsTextElement startElement = 'are';
+  ///     Result : BrsTextElement = ['How','are','you','?','Welcome', '!']
   ///
   static BrsTextLine combineRecreateTextLine(BrsTextElement startElement, List<BrsTextBlock> blocks) {
     List<BrsTextElement> listTextElement = [startElement];
 
     bool asNext = true;
 
+    //blocks = _sortTextBlock(blocks, HorizontalDirection.left);
     while (asNext) {
       BrsTextElement? nextElement = nextTextElement(listTextElement, blocks, HorizontalDirection.left);
       nextElement == null ? asNext = false : listTextElement.add(nextElement);
     }
+
+    // blocks = _sortTextBlock(blocks, HorizontalDirection.right);
+
     listTextElement = listTextElement.reversed.toList();
     asNext = true;
 
@@ -202,20 +234,19 @@ class TextBlockHelper {
     );
   }
 
-  /// Retourne une Liste de BrsTextElement avec tout les BrsTextElement a gauche de startElement
-  /// avec startElement compris.
+  /// Return a List of BrsTextElement with all BrsTextElement to the left of startElement
+  /// including startElement.
   /// Ex :
-  /// Pour simplifier, on considére que tous les block sont dans l'ordre et sur la meme ligne.
-  ///
-  ///     List<BrsTextBlock> blocks = [['Ca','va','comment']['?']['Ca', 'va', 'bien', '!']];
-  ///     BrsTextElement startElement = 'comment';
-  ///     Result : List<BrsTextElement> = ['Ca','va','comment']
+  ///     List<BrsTextBlock> blocks =  [['How', 'are', 'you', '?']['Welcome', '!']];
+  ///     BrsTextElement startElement = 'Welcome';
+  ///     Result : BrsTextElement = ['How','are','you','?', 'Welcome']
   ///
   static List<BrsTextElement> combineLeftTextElement(BrsTextElement startElement, List<BrsTextBlock> blocks) {
     List<BrsTextElement> listTextElement = [startElement];
 
     bool asNext = true;
 
+    blocks = _sortTextBlock(blocks, HorizontalDirection.left);
     while (asNext) {
       BrsTextElement? nextElement = nextTextElement(listTextElement, blocks, HorizontalDirection.left);
       nextElement == null ? asNext = false : listTextElement.add(nextElement);
@@ -223,13 +254,12 @@ class TextBlockHelper {
     return listTextElement.reversed.toList();
   }
 
-  /// Retourne une Liste de BrsTextElement avec tout les BrsTextElement a droite de startElement
+  /// Return a List of BrsTextElement with all BrsTextElement to the reight of startElement
+  /// including startElement.
   /// Ex :
-  /// Pour simplifier, on considére que tous les block sont dans l'ordre et sur la meme ligne.
-  ///
-  ///     List<BrsTextBlock> blocks = [['Ca','va','comment']['?']['Ca', 'va', 'bien', '!']];
-  ///     BrsTextElement startElement = 'comment';
-  ///     Result : List<BrsTextElement> = ['?', 'Ca','va', 'bien', '!']
+  ///     List<BrsTextBlock> blocks =  [['How', 'are', 'you', '?']['Welcome', '!']];
+  ///     BrsTextElement startElement = 'you';
+  ///     Result : BrsTextElement = ['you','?', 'Welcome', '!']
   ///
   static List<BrsTextElement> combineRightTextElement(BrsTextElement startElement, List<BrsTextBlock> blocks) {
     List<BrsTextElement> listTextElement = [startElement];
@@ -243,24 +273,35 @@ class TextBlockHelper {
     return listTextElement;
   }
 
+  /// Return a List of BrsTextElement between startElement and endElement
+  /// Ex :
+  ///     List<BrsTextBlock> blocks =  [['How', 'are', 'you', '?']['Welcome', '!']];
+  ///     BrsTextElement startElement = 'are';
+  ///     BrsTextElement endElement = 'Welcome';
+  ///     Result : BrsTextElement = ['you','?']
+  ///
   static List<BrsTextElement> combineBetweenTextElement(
       BrsTextElement startElement, BrsTextElement endElement, List<BrsTextBlock> blocks) {
-    List<BrsTextElement> listTextElement = [startElement];
+    List<BrsTextElement> listTextElement = [];
 
     bool asNext = true;
 
     while (asNext) {
-      BrsTextElement? nextElement = nextTextElement(listTextElement, blocks, HorizontalDirection.right);
-      nextElement == null ? asNext = false : listTextElement.add(nextElement);
-
-      if (asNext && nextElement!.text == endElement!.text) {
-        asNext = false;
+      BrsTextElement? nextElement = nextTextElement(
+        listTextElement.isEmpty ? [startElement] : listTextElement,
+        blocks,
+        HorizontalDirection.right,
+      );
+      if (nextElement == endElement) {
+        nextElement = null;
       }
+
+      nextElement == null ? asNext = false : listTextElement.add(nextElement);
     }
     return listTextElement;
   }
 
-  /// Retourne le block de texte "principale" (le plus grand)
+  /// Returns the "main" (largest) text block
   static BrsTextBlock? _findPrimaryBlock(List<BrsTextBlock> allBlocks) {
     BrsTextBlock? longTextBlock;
     for (var block in allBlocks) {

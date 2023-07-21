@@ -6,7 +6,7 @@ import 'package:ocr_scan_text/ocr_scan/model/recognizer_text/text_element.dart';
 
 import '../shape/trapezoid.dart';
 
-/// Permet de représenté un objet TextLine de MlKit
+/// Represents a TextLine object of Ml Kit
 class BrsTextLine extends BrsRecognizerText {
   final List<BrsTextElement> elements;
 

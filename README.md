@@ -2,40 +2,40 @@
  OCR Flutter
  `v1.0.0`
 
-Flutter OCR Scan Text est un wrapper autour de la librairie "[Google ML kit Text Recognition](https://pub.dev/packages/google_mlkit_text_recognition)".
-Il permet de faciliter la recherche précise de texte et l'affichage des résultats à partir de la caméra. 
+Flutter OCR Scan Text is a wrapper around the "[Google ML kit Text Recognition](https://pub.dev/packages/google_mlkit_text_recognition)" library.
+It helps to facilitate accurate text search and display of results from the camera.
 
 ## Features
 
-Permet de numérisez facilement le texte à partir de la caméra, d'extraire des résultats précis et les afficher à l'utilisateur.
+Allows you to easily scan text from the camera, extract accurate results and display them to the user.
 
-Les résultats sont renvoyé par liste de Block.
-- Un Block contient : le texte global du block, une liste de Line et la position. 
-- Une Line contient : le texte global de la line, une liste d'Element et la position. 
-- Un Element contient : un mot et la position.
+The results are returned by list of Block.
+- A Block contains: the global text of the block, a list of Lines and the position.
+- A Line contains: the global text of the line, a list of Elements and the position.
+- An Element contains: a word and the position.
 
 <p float="left">
   <img src="https://developers.google.com/static/ml-kit/vision/text-recognition/images/text-structure.png" width="600" />
 </p>
 
-Note: La librairie utilise le package de [Camera](https://pub.dev/packages/camera), assuré vous d'avoir la permission.
+Note: The library uses the [Camera](https://pub.dev/packages/camera) package, be sure to ask for permission.
 
 ## Usage
 
-#### Ajouter le package dans pubspec.yaml :
+#### Add package in pubspec.yaml :
 
 ```dart
 dependencies:
   ocr_scan_text: x.x.x
 ```
 
-#### Pour utiliser la librairie, importer : 
+#### To use the library, import : 
 
 ```dart
 import 'package:ocr_scan_text/ocr_scan_text.dart';
 ```
 
-#### Pour afficher le widget de detection de texte :
+#### To display the text detection widget:
 
 ```dart
 LiveScanWidget(
@@ -44,28 +44,27 @@ LiveScanWidget(
 )
 ```
 
-Un LiveScanWidget a besoin d'une liste de module pour commencer la detection. 
-Les résultats validé seront renvoyé a la methode "matchedResult".
+A LiveScanWidget needs a module list to start detection.
+Validated results will be returned to the "matchedResult" method.
 
-#### Créer un module de scan : 
+#### Create a scan module : 
 
-Dans cette exemple (voir le dossier `/example`), nous consideront que tous les Elements sont des résultats.
+In this example (see the `/example` folder), we consider all Elements to be results.
 
-Pour créer un nouveau module :
+Create a scan module :
 ```dart
 class ScanAllModule extends ScanModule
 ```
 
-Le constructeur d'un module définit :
-- label : Un label (optionnel) qui sera affiché à l'utilisateur lors du rendu 
-- color : Une couleur (optionnel) qui sera utilisé pour le rendu 
-- validateCountCorrelation : Le nombre de fois qu'il faut trouver le même résultat au même endroit pour qu'il soit valide. ( Comme la camera bouge certain chiffre / lettre peuvent être mal intépreter sur plusieurs frame ).
+The constructor of a module:
+- label: A label (optional) that will be displayed to the user during rendering
+- color: A color (optional) that will be used for rendering
+- validateCountCorrelation: The number of times the same result must be found in the same place for it to be valid. (As the camera moves certain numbers / letters may be misinterpreted over several frames).
 ```dart
 ScanAllModule() : super(label: 'All',color: Colors.redAccent.withOpacity(0.3), validateCountCorrelation: 1);
 ```
 
-Un module a pour but de rechercher, parmis les Block, une liste de résultat (ScanResult) et de la retourner à l'aide de la méthode "matchedResult".
-
+The purpose of a module is to search among the Blocks for a list of results (ScanResult) and to return it using the "matchedResult" method.
 ```dart
 @override
 Future<List<ScanResult>> matchedResult(List<BrsTextBlock> textBlock, String text) async {
@@ -81,14 +80,44 @@ Future<List<ScanResult>> matchedResult(List<BrsTextBlock> textBlock, String text
 }
 ```
 
-#### Pour demarrer un module : 
+#### Start a module : 
 
 ```dart
 monModule.start();
 ```
 
-#### Pour arreter un module :
+#### Stop a module :
 
 ```dart
 monModule.stop();
 ```
+
+
+## Helper
+
+You can use TextBlockHelper methods to help find results.
+
+###### TextBlockHelper.extractTextElementsWithRegex
+
+Find the list of elements that match with the regex
+
+###### TextBlockHelper.nextTextElement
+
+Find the next TextElement a right or left of TextElement 
+
+###### TextBlockHelper.combineRecreateTextLine
+
+When texts are on the same line but distant, MLKit can create two different TextBlock.
+The "combineRecreateTextLine" method will create a TextLine, from a starting TextElement, taking into account the Elements of each TextBlock
+
+###### TextBlockHelper.combineLeftTextElement
+
+Return a List of BrsTextElement with all BrsTextElement to the left of startElement including startElement.
+
+###### TextBlockHelper.combineRightTextElement
+
+Return a List of BrsTextElement with all BrsTextElement to the right of startElement including startElement.
+
+###### TextBlockHelper.combineBetweenTextElement
+
+Return a List of BrsTextElement between startElement and endElement

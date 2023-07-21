@@ -1,6 +1,6 @@
 import '../shape/trapezoid.dart';
 
-/// Objet de base pour représenter un objet MlKit
+/// Base object to represent a MlKit object
 abstract class BrsRecognizerText {
   final String text;
   final Trapezoid trapezoid;

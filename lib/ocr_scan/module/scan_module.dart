@@ -7,32 +7,30 @@ import '../model/recognizer_text/text_block.dart';
 import '../model/scan_result.dart';
 
 abstract class ScanModule {
-  /// Determine la distance a la quel un objet peut etre identifié comme un étant le meme (La camera se déplace)
-  ///  - Si distanceCorrelation est trop petite, cela va invalider les anciens
-  ///    résultats au moindre mouvement de camera.
-  ///  - Si distanceCorrelation est trop grande, des résultats similaires a des positions différentes
-  ///    peuvent être confondu.
-  /// La valeur est a adapter selon ce qu'on cherche à faire.
+  /// The distance at which an object can be identified as the same (camera moves)
+  ///  - If distanceCorrelation is too small, it will invalidate old results due to camera movement.
+  ///  - If distanceCorrelation is too large, similar results at different positions may be confused.
+  /// The value is to be adapted according to what you are trying to do.
   double distanceCorrelation;
 
-  /// Determine le nombre minimum de fois ou on doit trouvé le même résultat au même endroit pour valider
-  /// le résultat. ( Doit être > 0 )
+  /// The minimum number of times the same result must be found in the same place to validate
+  /// ( Must be > 0 )
   int validateCountCorrelation;
 
-  /// Determine si le module est démarré ou arreté
+  /// Module status; started or stopped
   bool _started = false;
   bool get started => _started;
 
-  /// Si le module est déjà en cours d'utilisation, l'image ne sera pas traité
+  /// If the module is already in use, the image will not be processed
   bool _busyGenerated = false;
 
-  /// Liste des résultats trouvé par le module
+  /// The last list of results found by the module
   List<MatchedCounter> matchedCounterList = [];
 
-  /// Nom du module ( Le nom sera affiché dans le rendu final )
+  /// Module name (The name will be displayed in the final rendering)
   String? label;
 
-  /// Couleur du module ( la couleur sera affiché dans le rendu final )
+  /// Module color (the color will be displayed in the final rendering)
   Color color;
 
   ScanModule({
@@ -44,25 +42,25 @@ abstract class ScanModule {
     assert(validateCountCorrelation > 0);
   }
 
-  /// Démarre le module
+  /// Start the module
   void start() {
     _started = true;
   }
 
-  /// Arret du module
+  /// Stop the module
   void stop() {
     _started = false;
   }
 
-  /// Chaque module doit retourner une List de ScanResult contenant tous les résultats trouvé
+  /// Method to be defined in each module to process the text found in the image and output a list of results
   Future<List<ScanResult>> matchedResult(
     List<BrsTextBlock> textBlock,
     String text,
   );
 
-  /// Permet de determiner si un résultat est le même
-  /// Il faut qu'il ai le même texte et la même position
-  /// On considére que le position est la même si elle est comprise entre -distanceCorrelation et +distanceCorrelation
+  /// Return true if the text's position is the same
+  /// Compare the "topLeftOffset" positions of the elements.
+  /// The "topLeftOffset" must be between -distanceCorrelation and +distanceCorrelation
   bool _matchedStringAndPosition(
     ScanResult newScanLine,
     ScanResult oldScanLine,
@@ -82,7 +80,7 @@ abstract class ScanModule {
     return false;
   }
 
-  /// On converti les TextBlock de MLKit en BrsTextBlock pour faire abstraction de MLKit
+  /// Convert MlKit TextBlock to BrsTextBlock to ignore MLKit
   List<BrsTextBlock> _convertTextBlocks(
     List<TextBlock> textBlock,
     Size imageSize,
@@ -97,8 +95,7 @@ abstract class ScanModule {
     return brsTextBlock;
   }
 
-  /// Lance la recherche de résulat du module puis met a jour la liste
-  /// des anciens résultats ( MatchedCounter )
+  /// Launches the module result search then updates the list of old results
   Future<List<MatchedCounter>> generateResult(
     List<TextBlock> textBlock,
     String text,
@@ -117,9 +114,9 @@ abstract class ScanModule {
       text,
     );
 
-    /// On met a jour les compteur de visibilité des objets MatchedCounter :
-    /// - Si toujours présent dans la nouvelle liste, on up le compteur
-    /// - Si non présent, on down le compteur et on supprime si plus visible
+    /// We update the visibility counters of the MatchedCounter objects:
+    /// - If still present in the new list, we up the counter
+    /// - If not present, we down the counter and we delete if no longer visible
     List<MatchedCounter> matchedCounterListUpdated = [];
     for (var element in matchedCounterList) {
       bool found = false;
@@ -140,7 +137,7 @@ abstract class ScanModule {
     }
     matchedCounterList = matchedCounterListUpdated;
 
-    /// On ajoute les nouvelles valeurs non connu dans matchedCounterList
+    /// We add the new unknown values in matchedCounterList
     for (var scanResult in newScanResult) {
       bool found = false;
       for (var element in matchedCounterList) {

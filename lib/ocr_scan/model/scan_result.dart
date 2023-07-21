@@ -4,15 +4,16 @@ import 'dart:ui';
 import 'package:ocr_scan_text/ocr_scan/model/recognizer_text/text_element.dart';
 import 'package:ocr_scan_text/ocr_scan/model/shape/trapezoid.dart';
 
-/// Représente un résultat trouvé par un module de scan
+/// Each ScanModule should return a list of results. The results are the ScanResults.
+/// It contains the list of TextElements constituting the result.
 class ScanResult {
-  /// Texte trouvé dans l'image; Il peut être différent du texte réel.
-  /// Par exemple :
-  /// - Texte réel : FR768792929389238923
-  /// - cleanedText : FR768 7929 2938 9238 923
+  /// Final result, it may be different from the text actually found.
+  /// Ex :
+  /// - Real text : FR768792929389238923
+  /// - Cleaned Text : FR768 7929 2938 9238 923
   final String? _cleanedText;
 
-  /// Liste de tous les TextElements formant le résultat
+  /// List of all TextElements forming the result
   List<BrsTextElement> scannedElementList;
 
   ScanResult({
@@ -20,12 +21,12 @@ class ScanResult {
     required this.scannedElementList,
   }) : _cleanedText = cleanedText;
 
-  /// Retourne _cleanedText si il existe, sinon le texte réel
+  /// Return _cleanedText if it exists, or else real text
   String get cleanedText {
     return _cleanedText ?? text;
   }
 
-  /// Retourne le texte réel composé des TextElements
+  /// Return real text
   String get text {
     String text = '';
     for (var textElement in scannedElementList) {
@@ -37,7 +38,7 @@ class ScanResult {
     return text;
   }
 
-  /// Retourne le trapezoid global contenant la liste des TextElements
+  /// Return the global trapezoid containing the list of TextElements
   Trapezoid get trapezoid {
     if (scannedElementList.isEmpty) {
       return Trapezoid(
@@ -58,7 +59,7 @@ class ScanResult {
     return _findTrapezoid(offsets);
   }
 
-  /// Retourne un Trapezoid contenant tous les TextElements
+  /// Return the global trapezoid containing the list of Offsets
   Trapezoid _findTrapezoid(List<Offset> offsets) {
     double left = double.infinity;
     double top = double.infinity;

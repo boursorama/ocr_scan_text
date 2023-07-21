@@ -9,10 +9,10 @@ import '../module/scan_module.dart';
 import '../render/scan_renderer.dart';
 
 class ScanWidget extends StatefulWidget {
-  /// Liste des modules de recherches
+  /// List of research modules
   final List<ScanModule> scanModules;
 
-  /// Methode de callback renvoyant les résultats trouvé et validé
+  /// Callback method returning the results found and validated
   final Function(ScanModule module, List<ScanResult> textBlockResult) matchedResult;
 
   const ScanWidget({
@@ -26,13 +26,13 @@ class ScanWidget extends StatefulWidget {
 }
 
 class ScanWidgetState<T extends ScanWidget> extends State<T> {
-  /// Objet MLKit de detection de texte
+  /// MLKit text detection object
   final TextRecognizer _textRecognizer = TextRecognizer();
 
-  /// Traitement d'une image déjà en cours
+  /// Processing an image already in progress
   bool _isBusy = false;
 
-  /// Surimpression sur l'image des différentes zones des résultats venant des modules
+  /// Overlay on the image of the different areas of the results coming from the modules
   CustomPaint? customPaint;
 
   @override
@@ -50,15 +50,15 @@ class ScanWidgetState<T extends ScanWidget> extends State<T> {
     return Container();
   }
 
-  /// On lance la recherche de résultat à partir de l'image pour tous les modules demarré
+  /// Launch the search for results from the image for all the modules started
   Future<void> processImage(InputImage inputImage, Size imageSize) async {
     if (_isBusy) return;
     _isBusy = true;
 
-    /// On demande a MLKit de nous retourner la liste des TextBlock dans l'image
+    /// Ask MLKit to return the list of TextBlocks in the image
     final recognizedText = await _textRecognizer.processImage(inputImage);
 
-    /// On crée un String correspondant aux textes trouvé par MLKIt
+    /// create a global String corresponding to the texts found by MLKIt
     String scannedText = '';
     List<TextElement> textBlocks = [];
     for (final textBlock in recognizedText.blocks) {
@@ -70,14 +70,14 @@ class ScanWidgetState<T extends ScanWidget> extends State<T> {
       }
     }
 
-    /// On lance la recherche de texte pour chaque module
+    /// Start the text search for each module
     Map<ScanModule, List<MatchedCounter>> mapModule = <ScanModule, List<MatchedCounter>>{};
     for (var scanModule in widget.scanModules) {
       if (!scanModule.started) {
         continue;
       }
 
-      /// On génére les résultats de chaque modules
+      /// Generate the results of each module
       List<MatchedCounter> scanLines = await scanModule.generateResult(
         recognizedText.blocks,
         scannedText,
@@ -90,14 +90,14 @@ class ScanWidgetState<T extends ScanWidget> extends State<T> {
       );
     }
 
-    /// On crée un ScanRenderer permettant d'afficher le rendu visuel des résultats trouvé
+    /// Create a ScanRenderer to display the visual rendering of the results found
     var painter = ScanRenderer(
       mapScanModules: mapModule,
       imageRotation: inputImage.metadata?.rotation ?? InputImageRotation.rotation90deg,
       imageSize: imageSize,
     );
 
-    /// On met a jour le customPaint à l'aide du ScanRenderer
+    /// Update the customPaint with the ScanRenderer
     customPaint = CustomPaint(painter: painter);
 
     mapModule.forEach((key, matchCounterList) {
@@ -109,7 +109,7 @@ class ScanWidgetState<T extends ScanWidget> extends State<T> {
           .toList();
 
       if (list.isNotEmpty) {
-        /// On retourne la liste des résultat validé
+        /// Return the list of validated results with CallBack method
         widget.matchedResult(
           key,
           list,

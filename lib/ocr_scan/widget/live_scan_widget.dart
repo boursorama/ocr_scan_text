@@ -7,10 +7,11 @@ import 'package:flutter/services.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:ocr_scan_text/ocr_scan/widget/scan_widget.dart';
 
-/// Widget permetant le Scan en "live" a l'aide de la camera
+/// Widget allowing "live" scanning using the camera
 class LiveScanWidget extends ScanWidget {
-  /// On respecte le ratio de la camera pour l'affichage de la preview
+  /// Respect the ratio of the camera for the display of the preview
   final bool respectRatio;
+
   const LiveScanWidget({
     super.key,
     required super.scanModules,
@@ -38,7 +39,7 @@ class LiveScanWidgetState extends ScanWidgetState<LiveScanWidget> {
     super.dispose();
   }
 
-  /// On affiche le widget de la camera des que celui-ci est pret
+  /// Display the camera widget as soon as it is ready
   @override
   Widget build(BuildContext context) {
     return _controller == null || _controller?.value == null || _controller?.value.isInitialized == false
@@ -46,7 +47,7 @@ class LiveScanWidgetState extends ScanWidgetState<LiveScanWidget> {
         : _cameraWidget();
   }
 
-  /// Widget de la camera affichant la preview
+  /// Camera widget showing preview
   Widget _cameraWidget() {
     final CameraController? cameraController = _controller;
     cameraController?.lockCaptureOrientation(DeviceOrientation.portraitUp);
@@ -61,7 +62,7 @@ class LiveScanWidgetState extends ScanWidgetState<LiveScanWidget> {
     } else {
       CustomPaint? customPaint = this.customPaint;
 
-      /// Preview de la camera
+      /// Preview
       CameraPreview preview = CameraPreview(
         cameraController,
         child: customPaint == null
@@ -90,7 +91,7 @@ class LiveScanWidgetState extends ScanWidgetState<LiveScanWidget> {
     }
   }
 
-  /// Lance l'analyse de l'image
+  /// Start image analysis
   Future _processCameraImage(CameraImage image) async {
     final WriteBuffer allBytes = WriteBuffer();
     for (final Plane plane in image.planes) {
@@ -142,7 +143,7 @@ class LiveScanWidgetState extends ScanWidgetState<LiveScanWidget> {
     );
   }
 
-  /// Demarrage de la camera
+  /// Start camera
   Future _startCamera() async {
     if (!Platform.isAndroid && !Platform.isIOS) {
       return;
@@ -173,7 +174,7 @@ class LiveScanWidgetState extends ScanWidgetState<LiveScanWidget> {
     });
   }
 
-  /// Arret de la camera
+  /// Stop camera
   Future _stopCamera() async {
     if (!Platform.isAndroid && !Platform.isIOS) {
       return;
