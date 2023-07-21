@@ -16,16 +16,14 @@ class Trapezoid {
     required this.bottomRightOffset,
   });
 
-  /// Permet de convertir un cornersPoints provenant de MlKit en Offset
-  /// On "corrige" aussi les problème d'axe sur android
+  /// Cconvert cornerPoints from MlKit to Offset
+  /// (We also "fix" the axis problem on android)
   static Offset _initPointToOffset(
     Point<int> point,
     Size imageSize,
   ) {
-    /// TODO: CA MARCHE PEUT ETRE PAS TOUJOURS
-    /// TODO: A TESTER EN LANDSCAPE
-    /// Sur android les cornersPoints ont des positions qui différe des axes principaux
-    /// X et Y sont inversé et le 0 de l'axe inversé se trouve a imageSize.height
+    /// The cornersPoints, with Android, have positions that differ from the main axes
+    /// X and Y are inverted and the 0 of the inverted axis is at imageSize.height
     if (Platform.isAndroid) {
       return Offset(
         imageSize.height - point.y.toDouble(),
@@ -38,7 +36,7 @@ class Trapezoid {
     );
   }
 
-  /// Permet de convertir la liste des 4 cornersPoints provenant de MlKit en Trapezoid
+  /// Convert list of 4 cornersPoints from MlKit to Trapezoid
   factory Trapezoid.fromCornerPoint(
     List<Point<int>> cornerPoints,
     Size imageSize,
@@ -63,7 +61,7 @@ class Trapezoid {
     );
   }
 
-  /// Permet de modifier la taille d'un Trapezoid pour l'adapter à la taille de l'image affiché
+  /// Resize Trapezoid to scaled image
   Trapezoid resizedTrapezoid(
     Size size,
     Size inputImageSize,

@@ -8,16 +8,17 @@ import '../model/matched_counter.dart';
 import '../model/shape/trapezoid.dart';
 import '../module/scan_module.dart';
 
-/// Permet de dessiner le rendu de tous les résultat trouvé dans l'image
+/// Overlays the results found by the ScanModules
 class ScanRenderer extends CustomPainter {
-  /// Map contenant chaque module et la liste des resultats associés
+  /// Map containing each module and the list of associated results
   final Map<ScanModule, List<MatchedCounter>> mapScanModules;
 
-  /// Permet d'orienté le rendu suivant l'angle de l'image
+  /// Orients the rendering according to the angle of the image
   final InputImageRotation imageRotation;
 
-  /// Permet d'adapter la taille du rendu suivant la taille de l'image
+  /// Size of image
   final Size imageSize;
+
   ScanRenderer({
     required this.mapScanModules,
     required this.imageRotation,
@@ -29,10 +30,10 @@ class ScanRenderer extends CustomPainter {
     Size size,
     Trapezoid trapezoid,
   ) {
-    /// On reset le canvas
+    /// Reset canvas
     canvas.saveLayer(Offset.zero & size, Paint());
 
-    /// On positionne le canvas au topLeft du résultat trouvé
+    /// Translate canvas to initial position of Trapezoid
     canvas.translate(
       trapezoid.topLeftOffset.dx < trapezoid.bottomLeftOffset.dx
           ? trapezoid.topLeftOffset.dx
@@ -40,7 +41,7 @@ class ScanRenderer extends CustomPainter {
       trapezoid.topLeftOffset.dy.toDouble(),
     );
 
-    /// On calcul l'angle entre le topLeftOffset et le topRightOffset
+    /// Calculate the angle between the topLeftOffset and topRightOffset
     double angle = calculateAngle(
       Offset(
         trapezoid.topLeftOffset.dx.toDouble(),
@@ -52,24 +53,22 @@ class ScanRenderer extends CustomPainter {
       ),
     );
 
-    /// On tourne le canvas avec l'angle trouvé
+    /// Rotate the canvas
     canvas.rotate(angle * (pi / 180));
     return canvas;
   }
 
   @override
   void paint(Canvas canvas, Size size) {
-    /// On parcours la liste de tous les modules pour afficher le résultat
     mapScanModules.forEach(
       (module, matchedCounterList) {
         for (MatchedCounter matchedCount in matchedCounterList) {
           if (!matchedCount.visible) {
-            /// Si le résultat n'est pas visible on ne fait rien
+            /// If the result is not visible, do nothing.
             continue;
           }
 
-          /// On redimensionne le Trapezoid du résultat pour l'adapter a la taille de la preview de la camera
-          /// ( On ajoute une petite marge pour que le rendu ne cache pas le résultat )
+          /// Resize the trapezoid of the result to adapt it to the size of the preview of the camera
           double marge = 8;
           Trapezoid trapezoid = matchedCount.scanResult.trapezoid.resizedTrapezoid(
             size,
@@ -81,7 +80,7 @@ class ScanRenderer extends CustomPainter {
 
           canvas = _setCanvasPosition(canvas, size, trapezoid);
 
-          /// On calcul l'angle entre le topLeftOffset et le topRightOffset
+          /// Calculate the angle between the topLeftOffset and the topRightOffset
           double angle = calculateAngle(
             Offset(
               trapezoid.topLeftOffset.dx.toDouble(),
@@ -93,18 +92,18 @@ class ScanRenderer extends CustomPainter {
             ),
           );
 
-          /// Calcul de la width selon le ratio width / angle.
+          /// Calculate the width according to the ratio width / angle.
           double lerp = lerpDouble(
                 1,
-                2.8, // valeur arbitraire
+                2.8, // arbitrary value
                 ((angle < 0 ? -angle : angle) / 90) * ((angle < 0 ? -angle : angle) / 90),
               ) ??
               1;
 
-          /// Width calculé à partir de l'angle modifié du canvas
+          /// idth calculated from modified canvas angle
           double width = (trapezoid.topRightOffset.dx - trapezoid.topLeftOffset.dx) * lerp;
 
-          /// Height calculé à partir de l'angle modifié du canvas
+          /// Height calculated from modified canvas angle
           double height = trapezoid.bottomRightOffset.dy - trapezoid.topRightOffset.dy;
           if (trapezoid.bottomLeftOffset.dy - trapezoid.topLeftOffset.dy > height) {
             height = trapezoid.bottomLeftOffset.dy - trapezoid.topLeftOffset.dy;
@@ -165,7 +164,7 @@ class ScanRenderer extends CustomPainter {
     );
   }
 
-  /// Dessine le nom du module, si on en a un, autour du résultat trouvé
+  /// Draw the name of the module, if there is one, around the found result
   void _paintLabel(
     Canvas canvas,
     String label,
@@ -215,7 +214,7 @@ class ScanRenderer extends CustomPainter {
     );
   }
 
-  /// Retourne l'angle de deux Offset
+  /// Returns the angle between two offsets
   double calculateAngle(Offset point1, Offset point2) {
     double deltaX = point2.dx - point1.dx;
     double deltaY = point2.dy - point1.dy;
