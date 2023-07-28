@@ -11,13 +11,23 @@ class BrsTextLine extends BrsRecognizerText {
   final List<BrsTextElement> elements;
 
   BrsTextLine({
-    required String text,
     required this.elements,
-    required Trapezoid trapezoid,
   }) : super(
-          text: text,
-          trapezoid: trapezoid,
+          text: _generateText(elements),
+          trapezoid: _generateTrapezoid(elements),
         );
+
+  static String _generateText(List<BrsTextElement> elements) {
+    String text = '';
+    for (var element in elements) {
+      text += element == elements.first ? element.text : ' ${element.text}';
+    }
+    return text;
+  }
+
+  static Trapezoid _generateTrapezoid(List<BrsTextElement> elements) {
+    return Trapezoid.fromElementsList(elements);
+  }
 
   factory BrsTextLine.fromTextLine(
     TextLine textLine,
@@ -31,24 +41,15 @@ class BrsTextLine extends BrsRecognizerText {
       ));
     }
     return BrsTextLine(
-      text: textLine.text,
       elements: elements,
-      trapezoid: Trapezoid.fromCornerPoint(
-        textLine.cornerPoints,
-        imageSize,
-      ),
     );
   }
 
   BrsTextLine copyWith({
-    String? text,
     List<BrsTextElement>? elements,
-    Trapezoid? trapezoid,
   }) {
     return BrsTextLine(
-      text: text ?? this.text,
       elements: elements ?? this.elements,
-      trapezoid: trapezoid ?? this.trapezoid,
     );
   }
 

@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:ocr_scan_text/ocr_scan/model/recognizer_text/text_element.dart';
@@ -56,29 +55,7 @@ class ScanResult {
       offsets.add(element.trapezoid.topRightOffset);
       offsets.add(element.trapezoid.bottomLeftOffset);
     }
-    return _findTrapezoid(offsets);
-  }
-
-  /// Return the global trapezoid containing the list of Offsets
-  Trapezoid _findTrapezoid(List<Offset> offsets) {
-    double left = double.infinity;
-    double top = double.infinity;
-    double right = double.negativeInfinity;
-    double bottom = double.negativeInfinity;
-
-    for (var offset in offsets) {
-      left = min(left, offset.dx);
-      top = min(top, offset.dy);
-      right = max(right, offset.dx);
-      bottom = max(bottom, offset.dy);
-    }
-
-    return Trapezoid(
-      topLeftOffset: Offset(left, top),
-      bottomLeftOffset: Offset(left, bottom),
-      topRightOffset: Offset(right, top),
-      bottomRightOffset: Offset(right, bottom),
-    );
+    return Trapezoid.fromOffsetList(offsets);
   }
 
   @override

@@ -29,27 +29,14 @@ class TestHelper {
 
       linesList.add(
         BrsTextLine(
-          text: line,
           elements: elementsList,
-          trapezoid: _createTrapezoid(
-            startX: elementsList.first.trapezoid.topLeftOffset.dx,
-            startY: elementsList.first.trapezoid.topLeftOffset.dy,
-            width: elementsList.last.trapezoid.topRightOffset.dx - elementsList.first.trapezoid.topLeftOffset.dx,
-          ),
         ),
       );
       startY = linesList.last.trapezoid.bottomRightOffset.dx + 10;
     }
 
     return BrsTextBlock(
-      text: text,
       lines: linesList,
-      trapezoid: _createTrapezoid(
-        startX: linesList.first.trapezoid.topLeftOffset.dx,
-        startY: linesList.first.trapezoid.topLeftOffset.dy,
-        width: linesList.last.trapezoid.topRightOffset.dx - linesList.first.trapezoid.topLeftOffset.dx,
-        height: linesList.last.trapezoid.bottomRightOffset.dy - linesList.first.trapezoid.topRightOffset.dy,
-      ),
     );
   }
 

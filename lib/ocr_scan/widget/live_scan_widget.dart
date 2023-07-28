@@ -147,11 +147,11 @@ class LiveScanWidgetState extends ScanWidgetState<LiveScanWidget> {
       return;
     }
     _cameras = await availableCameras();
-    _controller = CameraController(_cameras[0], ResolutionPreset.max);
+
     final camera = _cameras[0];
     _controller = CameraController(
       camera,
-      ResolutionPreset.high,
+      ResolutionPreset.max,
       enableAudio: false,
     );
     _controller?.initialize().then((_) {
