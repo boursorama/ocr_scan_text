@@ -10,7 +10,7 @@ import 'package:path/path.dart' as path;
 import 'package:pdf_render/pdf_render.dart';
 
 class StaticScanWidget extends ScanWidget {
-  File file;
+  final File file;
   StaticScanWidget({
     super.key,
     required super.scanModules,
