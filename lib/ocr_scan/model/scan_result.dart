@@ -83,7 +83,6 @@ class ScanResult {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
       other is ScanResult && runtimeType == other.runtimeType && cleanedText == cleanedText && trapezoid == trapezoid;
 
   @override

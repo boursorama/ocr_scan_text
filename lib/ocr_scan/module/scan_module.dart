@@ -37,7 +37,7 @@ abstract class ScanModule {
     this.label,
     this.color = Colors.transparent,
     this.validateCountCorrelation = 5,
-    this.distanceCorrelation = 30,
+    this.distanceCorrelation = 0,
   }) {
     assert(validateCountCorrelation > 0);
   }

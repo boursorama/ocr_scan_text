@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui' as ui show Image;
 
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
@@ -8,18 +9,34 @@ import '../model/scan_result.dart';
 import '../module/scan_module.dart';
 import '../render/scan_renderer.dart';
 
+enum Mode {
+  camera,
+  static,
+}
+
 class ScanWidget extends StatefulWidget {
+  static Mode _actualMode = Mode.camera;
+
+  static Mode get actualMode => _actualMode;
+
+  /// Respect the ratio of the camera for the display of the preview
+  final bool respectRatio;
+
   /// List of research modules
   final List<ScanModule> scanModules;
 
   /// Callback method returning the results found and validated
   final Function(ScanModule module, List<ScanResult> textBlockResult) matchedResult;
 
-  const ScanWidget({
+  ScanWidget({
     Key? key,
     required this.scanModules,
     required this.matchedResult,
-  }) : super(key: key);
+    required this.respectRatio,
+    required Mode mode,
+  }) : super(key: key) {
+    ScanWidget._actualMode = mode;
+  }
 
   @override
   ScanWidgetState createState() => ScanWidgetState();
@@ -51,7 +68,7 @@ class ScanWidgetState<T extends ScanWidget> extends State<T> {
   }
 
   /// Launch the search for results from the image for all the modules started
-  Future<void> processImage(InputImage inputImage, Size imageSize) async {
+  Future<void> processImage(InputImage inputImage, Size imageSize, ui.Image? background) async {
     if (_isBusy) return;
     _isBusy = true;
 
@@ -95,6 +112,7 @@ class ScanWidgetState<T extends ScanWidget> extends State<T> {
       mapScanModules: mapModule,
       imageRotation: inputImage.metadata?.rotation ?? InputImageRotation.rotation90deg,
       imageSize: imageSize,
+      background: background,
     );
 
     /// Update the customPaint with the ScanRenderer

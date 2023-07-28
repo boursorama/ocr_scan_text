@@ -120,72 +120,65 @@ class TextBlockHelper {
           (startElements.last.trapezoid.bottomLeftOffset.dy - startElements.last.trapezoid.topLeftOffset.dy) / 2,
     );
 
-    // 1000 is an arbitrary number, we just want to make a big line
+    // 10000 is an arbitrary number, we just want to make a big line
     Offset endPoint = Offset(
-      startPoint.dx + (direction == HorizontalDirection.left ? -1000 : 1000) * cos(angle),
-      startPoint.dy + (direction == HorizontalDirection.left ? -1000 : 1000) * sin(angle),
+      startPoint.dx + (direction == HorizontalDirection.left ? -10000 : 10000) * cos(angle),
+      startPoint.dy + (direction == HorizontalDirection.left ? -10000 : 10000) * sin(angle),
     );
 
-    for (BrsTextBlock block in blocks) {
-      for (BrsTextLine line in block.lines) {
-        for (BrsTextElement element in line.elements) {
-          bool duplicated = false;
-          for (BrsTextElement startElement in startElements) {
-            if (startElement.trapezoid.topLeftOffset == element.trapezoid.topLeftOffset) {
-              duplicated = true;
-              continue;
-            }
-          }
-
-          if (duplicated) {
-            continue;
-          }
-          if (MathHelper.doSegmentsIntersect(
-            startPoint,
-            endPoint,
-            element.trapezoid.topLeftOffset,
-            element.trapezoid.bottomLeftOffset,
-          )) {
-            return element;
-          }
+    List<BrsTextElement> sortedElement = _sortTextElement(List.from(blocks), direction);
+    int i = 0;
+    for (BrsTextElement element in sortedElement) {
+      bool duplicated = false;
+      for (BrsTextElement startElement in startElements) {
+        if (startElement == element) {
+          duplicated = true;
+          continue;
         }
       }
+
+      if (duplicated) {
+        continue;
+      }
+
+      if (MathHelper.doSegmentsIntersect(
+        startPoint,
+        endPoint,
+        element.trapezoid.topLeftOffset,
+        element.trapezoid.bottomLeftOffset,
+      )) {
+        return element;
+      }
+
+      i++;
     }
     return null;
   }
 
-  static List<BrsTextBlock> _sortTextBlock(List<BrsTextBlock> blocks, HorizontalDirection direction) {
+  static List<BrsTextElement> _sortTextElement(List<BrsTextBlock> blocks, HorizontalDirection direction) {
+    List<BrsTextElement> listElements = [];
+    for (var block in blocks) {
+      for (var line in block.lines) {
+        for (var element in line.elements) {
+          listElements.add(element);
+        }
+      }
+    }
+
     if (direction == HorizontalDirection.right) {
-      blocks.sort(
+      listElements.sort(
         (a, b) => a.trapezoid.topLeftOffset.dx.compareTo(
           b.trapezoid.topLeftOffset.dx,
         ),
       );
     } else {
-      blocks.sort(
+      listElements.sort(
         (a, b) => b.trapezoid.topLeftOffset.dx.compareTo(
           a.trapezoid.topLeftOffset.dx,
         ),
       );
-
-      for (var block in blocks) {
-        block.lines.sort(
-          (a, b) => b.trapezoid.topLeftOffset.dx.compareTo(
-            a.trapezoid.topLeftOffset.dx,
-          ),
-        );
-
-        for (var line in block.lines) {
-          line.elements.sort(
-            (a, b) => b.trapezoid.topLeftOffset.dx.compareTo(
-              a.trapezoid.topLeftOffset.dx,
-            ),
-          );
-        }
-      }
     }
-
-    return blocks;
+    return listElements;
   }
 
   /// Return a BrsTextLine : It's full line by combining left and right all TextElement on the same line
@@ -200,14 +193,10 @@ class TextBlockHelper {
     List<BrsTextElement> listTextElement = [startElement];
 
     bool asNext = true;
-
-    //blocks = _sortTextBlock(blocks, HorizontalDirection.left);
     while (asNext) {
       BrsTextElement? nextElement = nextTextElement(listTextElement, blocks, HorizontalDirection.left);
       nextElement == null ? asNext = false : listTextElement.add(nextElement);
     }
-
-    // blocks = _sortTextBlock(blocks, HorizontalDirection.right);
 
     listTextElement = listTextElement.reversed.toList();
     asNext = true;
@@ -234,6 +223,67 @@ class TextBlockHelper {
     );
   }
 
+  static List<BrsTextElement> _combineTextElement(
+    BrsTextElement startElement,
+    List<BrsTextBlock> blocks,
+    HorizontalDirection direction,
+  ) {
+    double angle;
+
+    Trapezoid? primaryTrapezoid = _findPrimaryBlock(blocks)?.trapezoid;
+    if (primaryTrapezoid == null) {
+      return [startElement];
+    }
+
+    /// TODO: If the biggest block is not in the same angle as startElement, it doesn't work.
+    /// TODO: This case should not happen
+    angle = MathHelper.retrieveAngle(
+      primaryTrapezoid.topLeftOffset,
+      primaryTrapezoid.topRightOffset,
+    );
+
+    Offset startPoint = Offset(
+      startElement.trapezoid.topLeftOffset.dx,
+      startElement.trapezoid.topLeftOffset.dy +
+          (startElement.trapezoid.bottomLeftOffset.dy - startElement.trapezoid.topLeftOffset.dy) / 2,
+    );
+
+    // 10000 is an arbitrary number, we just want to make a big line
+    int lineDistance = (direction == HorizontalDirection.right ? 10000 : -10000);
+    Offset endPoint = Offset(
+      startPoint.dx + lineDistance * cos(angle),
+      startPoint.dy + lineDistance * sin(angle),
+    );
+
+    List<BrsTextElement> sortedElement = _sortTextElement(
+      List.from(blocks),
+      direction,
+    );
+    List<BrsTextElement> newListTextElement = [startElement];
+    for (BrsTextElement element in sortedElement) {
+      if (startElement == element) {
+        continue;
+      }
+
+      if (MathHelper.doSegmentsIntersect(
+        startPoint,
+        endPoint,
+        element.trapezoid.topLeftOffset,
+        element.trapezoid.bottomLeftOffset,
+      )) {
+        newListTextElement.add(element);
+      }
+    }
+
+    newListTextElement.sort(
+      (a, b) => a.trapezoid.topLeftOffset.dx.compareTo(
+        b.trapezoid.topLeftOffset.dx,
+      ),
+    );
+
+    return newListTextElement;
+  }
+
   /// Return a List of BrsTextElement with all BrsTextElement to the left of startElement
   /// including startElement.
   /// Ex :
@@ -242,16 +292,7 @@ class TextBlockHelper {
   ///     Result : BrsTextElement = ['How','are','you','?', 'Welcome']
   ///
   static List<BrsTextElement> combineLeftTextElement(BrsTextElement startElement, List<BrsTextBlock> blocks) {
-    List<BrsTextElement> listTextElement = [startElement];
-
-    bool asNext = true;
-
-    blocks = _sortTextBlock(blocks, HorizontalDirection.left);
-    while (asNext) {
-      BrsTextElement? nextElement = nextTextElement(listTextElement, blocks, HorizontalDirection.left);
-      nextElement == null ? asNext = false : listTextElement.add(nextElement);
-    }
-    return listTextElement.reversed.toList();
+    return _combineTextElement(startElement, blocks, HorizontalDirection.left);
   }
 
   /// Return a List of BrsTextElement with all BrsTextElement to the reight of startElement
@@ -262,15 +303,7 @@ class TextBlockHelper {
   ///     Result : BrsTextElement = ['you','?', 'Welcome', '!']
   ///
   static List<BrsTextElement> combineRightTextElement(BrsTextElement startElement, List<BrsTextBlock> blocks) {
-    List<BrsTextElement> listTextElement = [startElement];
-
-    bool asNext = true;
-
-    while (asNext) {
-      BrsTextElement? nextElement = nextTextElement(listTextElement, blocks, HorizontalDirection.right);
-      nextElement == null ? asNext = false : listTextElement.add(nextElement);
-    }
-    return listTextElement;
+    return _combineTextElement(startElement, blocks, HorizontalDirection.right);
   }
 
   /// Return a List of BrsTextElement between startElement and endElement
