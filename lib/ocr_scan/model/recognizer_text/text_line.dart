@@ -51,4 +51,15 @@ class BrsTextLine extends BrsRecognizerText {
       trapezoid: trapezoid ?? this.trapezoid,
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      other is BrsTextLine &&
+      runtimeType == other.runtimeType &&
+      trapezoid == other.trapezoid &&
+      text == other.text &&
+      elements == other.elements;
+
+  @override
+  int get hashCode => trapezoid.hashCode ^ text.hashCode ^ elements.hashCode;
 }

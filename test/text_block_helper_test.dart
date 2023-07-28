@@ -50,7 +50,7 @@ void main() {
       'are you',
     );
 
-    expect(list.length, 2);
+    expect(list.length, 4);
     expect(list.first.text, 'How');
     expect(list.last.text, '?');
   });
@@ -74,7 +74,7 @@ void main() {
       textBlocks,
     );
 
-    expect(textLine.text, 'How are you ? Welcome ! from Paris');
+    expect(textLine.text, 'How are you ? are you fine ? Welcome ! from Paris');
   });
 
   test('TextBlockHelper_combineLeftTextElement', () {

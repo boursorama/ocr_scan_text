@@ -12,7 +12,14 @@ dependencies:
   plugin_platform_interface: ^2.0.2
   google_mlkit_text_recognition: ^0.8.1
   camera: ^0.10.2+1
+  image: ^4.0.17
+  pdf_render: ^1.4.0
+  path_provider: ^2.0.15
 
+#dependency_overrides:
+  # This is due to the fact that the package native_pdf_view use a version of the package
+  # photo_view as dependency that breaks with flutter version >= 2.10.0.
+#  pdfx: 2.3.0
 
 dev_dependencies:
   flutter_test:

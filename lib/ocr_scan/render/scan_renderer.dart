@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'dart:ui';
+import 'dart:ui' as ui show Image;
 
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
@@ -19,47 +20,32 @@ class ScanRenderer extends CustomPainter {
   /// Size of image
   final Size imageSize;
 
+  ui.Image? background;
+
   ScanRenderer({
     required this.mapScanModules,
     required this.imageRotation,
     required this.imageSize,
+    this.background,
   });
 
-  Canvas _setCanvasPosition(
-    Canvas canvas,
-    Size size,
-    Trapezoid trapezoid,
-  ) {
-    /// Reset canvas
-    canvas.saveLayer(Offset.zero & size, Paint());
+  Size paintBackground(Canvas canvas, Size size, ui.Image image) {
+    final imageSize = Size(image.width.toDouble(), image.height.toDouble());
+    final FittedSizes sizes = applyBoxFit(BoxFit.contain, imageSize, size);
 
-    /// Translate canvas to initial position of Trapezoid
-    canvas.translate(
-      trapezoid.topLeftOffset.dx < trapezoid.bottomLeftOffset.dx
-          ? trapezoid.topLeftOffset.dx
-          : trapezoid.bottomLeftOffset.dx,
-      trapezoid.topLeftOffset.dy.toDouble(),
-    );
-
-    /// Calculate the angle between the topLeftOffset and topRightOffset
-    double angle = calculateAngle(
-      Offset(
-        trapezoid.topLeftOffset.dx.toDouble(),
-        trapezoid.topLeftOffset.dy.toDouble(),
-      ),
-      Offset(
-        trapezoid.topRightOffset.dx.toDouble(),
-        trapezoid.topRightOffset.dy.toDouble(),
-      ),
-    );
-
-    /// Rotate the canvas
-    canvas.rotate(angle * (pi / 180));
-    return canvas;
+    final Rect dstRect = Alignment.center.inscribe(sizes.destination, Offset.zero & size);
+    canvas.drawImageRect(image, Offset.zero & imageSize, dstRect, Paint());
+    return sizes.destination;
   }
 
   @override
   void paint(Canvas canvas, Size size) {
+    ui.Image? background = this.background;
+    Size? backgroundSize;
+    if (background != null) {
+      backgroundSize = paintBackground(canvas, size, background);
+    }
+
     mapScanModules.forEach(
       (module, matchedCounterList) {
         for (MatchedCounter matchedCount in matchedCounterList) {
@@ -69,13 +55,15 @@ class ScanRenderer extends CustomPainter {
           }
 
           /// Resize the trapezoid of the result to adapt it to the size of the preview of the camera
-          double marge = 8;
+          double padding = 8;
           Trapezoid trapezoid = matchedCount.scanResult.trapezoid.resizedTrapezoid(
-            size,
+            backgroundSize ?? size,
             imageSize,
             imageRotation,
-            marge,
-            marge,
+            padding,
+            padding,
+            backgroundSize != null ? (size.width - backgroundSize.width) / 2 : 0,
+            backgroundSize != null ? (size.height - backgroundSize.height) / 2 : 0,
           );
 
           canvas = _setCanvasPosition(canvas, size, trapezoid);
@@ -91,6 +79,10 @@ class ScanRenderer extends CustomPainter {
               trapezoid.topRightOffset.dy.toDouble(),
             ),
           );
+
+          if (!angle.isFinite) {
+            angle = 0;
+          }
 
           /// Calculate the width according to the ratio width / angle.
           double lerp = lerpDouble(
@@ -118,8 +110,8 @@ class ScanRenderer extends CustomPainter {
           RRect fullRect = RRect.fromRectAndRadius(
             Rect.fromCenter(
               center: Offset((width) / 2, (height) / 2),
-              width: width + marge,
-              height: height + marge,
+              width: width + padding,
+              height: height + padding,
             ),
             Radius.circular(r),
           );
@@ -212,6 +204,39 @@ class ScanRenderer extends CustomPainter {
       canvas,
       Offset(margeX, -18),
     );
+  }
+
+  Canvas _setCanvasPosition(
+    Canvas canvas,
+    Size size,
+    Trapezoid trapezoid,
+  ) {
+    /// Reset canvas
+    canvas.saveLayer(Offset.zero & size, Paint());
+
+    /// Translate canvas to initial position of Trapezoid
+    canvas.translate(
+      trapezoid.topLeftOffset.dx < trapezoid.bottomLeftOffset.dx
+          ? trapezoid.topLeftOffset.dx
+          : trapezoid.bottomLeftOffset.dx,
+      trapezoid.topLeftOffset.dy.toDouble(),
+    );
+
+    /// Calculate the angle between the topLeftOffset and topRightOffset
+    double angle = calculateAngle(
+      Offset(
+        trapezoid.topLeftOffset.dx.toDouble(),
+        trapezoid.topLeftOffset.dy.toDouble(),
+      ),
+      Offset(
+        trapezoid.topRightOffset.dx.toDouble(),
+        trapezoid.topRightOffset.dy.toDouble(),
+      ),
+    );
+
+    /// Rotate the canvas
+    canvas.rotate(angle * (pi / 180));
+    return canvas;
   }
 
   /// Returns the angle between two offsets
