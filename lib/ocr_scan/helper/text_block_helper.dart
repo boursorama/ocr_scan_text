@@ -212,14 +212,7 @@ class TextBlockHelper {
     }
 
     return BrsTextLine(
-      text: recreatedText,
       elements: listTextElement,
-      trapezoid: Trapezoid(
-        topLeftOffset: listTextElement.first.trapezoid.topLeftOffset,
-        bottomLeftOffset: listTextElement.first.trapezoid.bottomLeftOffset,
-        topRightOffset: listTextElement.last.trapezoid.topRightOffset,
-        bottomRightOffset: listTextElement.last.trapezoid.bottomRightOffset,
-      ),
     );
   }
 
@@ -242,18 +235,8 @@ class TextBlockHelper {
       primaryTrapezoid.topRightOffset,
     );
 
-    Offset startPoint = Offset(
-      startElement.trapezoid.topLeftOffset.dx,
-      startElement.trapezoid.topLeftOffset.dy +
-          (startElement.trapezoid.bottomLeftOffset.dy - startElement.trapezoid.topLeftOffset.dy) / 2,
-    );
-
     // 10000 is an arbitrary number, we just want to make a big line
     int lineDistance = (direction == HorizontalDirection.right ? 10000 : -10000);
-    Offset endPoint = Offset(
-      startPoint.dx + lineDistance * cos(angle),
-      startPoint.dy + lineDistance * sin(angle),
-    );
 
     List<BrsTextElement> sortedElement = _sortTextElement(
       List.from(blocks),
@@ -264,6 +247,18 @@ class TextBlockHelper {
       if (startElement == element) {
         continue;
       }
+
+      Offset startPoint = Offset(
+        newListTextElement.last.trapezoid.topRightOffset.dx,
+        newListTextElement.last.trapezoid.topRightOffset.dy +
+            (newListTextElement.last.trapezoid.bottomRightOffset.dy -
+                    newListTextElement.last.trapezoid.topRightOffset.dy) /
+                2,
+      );
+      Offset endPoint = Offset(
+        startPoint.dx + lineDistance * cos(angle),
+        startPoint.dy + lineDistance * sin(angle),
+      );
 
       if (MathHelper.doSegmentsIntersect(
         startPoint,

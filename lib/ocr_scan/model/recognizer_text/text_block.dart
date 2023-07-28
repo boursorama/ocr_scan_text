@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:ocr_scan_text/ocr_scan/model/recognizer_text/recognizer_text.dart';
+import 'package:ocr_scan_text/ocr_scan/model/recognizer_text/text_element.dart';
 import 'package:ocr_scan_text/ocr_scan/model/recognizer_text/text_line.dart';
 
 import '../shape/trapezoid.dart';
@@ -11,13 +12,32 @@ class BrsTextBlock extends BrsRecognizerText {
   final List<BrsTextLine> lines;
 
   BrsTextBlock({
-    required String text,
     required this.lines,
-    required Trapezoid trapezoid,
   }) : super(
-          text: text,
-          trapezoid: trapezoid,
+          text: _generateText(lines),
+          trapezoid: _generateTrapezoid(lines),
         );
+
+  static String _generateText(List<BrsTextLine> lines) {
+    String text = '';
+    for (var line in lines) {
+      text += line == lines.first ? '' : '\n';
+      for (var element in line.elements) {
+        text += element == line.elements.first ? element.text : ' ${element.text}';
+      }
+    }
+    return text;
+  }
+
+  static Trapezoid _generateTrapezoid(List<BrsTextLine> lines) {
+    List<BrsTextElement> elements = [];
+    for (var line in lines) {
+      for (var element in line.elements) {
+        elements.add(element);
+      }
+    }
+    return Trapezoid.fromElementsList(elements);
+  }
 
   /// Returns an instance of [BrsTextBlock] from a given [textBlock].
   factory BrsTextBlock.fromTextBlock(
@@ -32,24 +52,15 @@ class BrsTextBlock extends BrsRecognizerText {
       ));
     }
     return BrsTextBlock(
-      text: textBlock.text,
       lines: lines,
-      trapezoid: Trapezoid.fromCornerPoint(
-        textBlock.cornerPoints,
-        imageSize,
-      ),
     );
   }
 
   BrsTextBlock copyWith({
-    String? text,
     List<BrsTextLine>? lines,
-    Trapezoid? trapezoid,
   }) {
     return BrsTextBlock(
-      text: text ?? this.text,
       lines: lines ?? this.lines,
-      trapezoid: trapezoid ?? this.trapezoid,
     );
   }
 
