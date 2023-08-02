@@ -3,7 +3,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
-import 'package:ocr_scan_text/ocr_scan/widget/scan_widget.dart';
+import 'package:ocr_scan_text/ocr_scan/services/ocr_scan_service.dart';
 
 import '../recognizer_text/text_element.dart';
 
@@ -28,7 +28,7 @@ class Trapezoid {
     /// The cornersPoints, with Android, have positions that differ from the main axes
     /// X and Y are inverted and the 0 of the inverted axis is at imageSize.height
     /// Just with camera
-    if (Platform.isAndroid && ScanWidget.actualMode == Mode.camera) {
+    if (Platform.isAndroid && OcrScanService.actualMode == Mode.camera) {
       return Offset(
         imageSize.height - point.y.toDouble(),
         point.x.toDouble(),
@@ -186,7 +186,7 @@ class Trapezoid {
     Size absoluteImageSize,
     double adjustTranslate,
   ) {
-    double denominator = Platform.isIOS || (Platform.isAndroid && ScanWidget.actualMode == Mode.static)
+    double denominator = Platform.isIOS || (Platform.isAndroid && OcrScanService.actualMode == Mode.static)
         ? absoluteImageSize.width
         : absoluteImageSize.height;
     switch (rotation) {
@@ -206,7 +206,7 @@ class Trapezoid {
     Size absoluteImageSize,
     double adjustTranslate,
   ) {
-    double denominator = Platform.isIOS || (Platform.isAndroid && ScanWidget.actualMode == Mode.static)
+    double denominator = Platform.isIOS || (Platform.isAndroid && OcrScanService.actualMode == Mode.static)
         ? absoluteImageSize.height
         : absoluteImageSize.width;
     switch (rotation) {
