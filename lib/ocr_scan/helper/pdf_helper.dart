@@ -33,7 +33,7 @@ class PDFHelper {
     /// On prend que les 2 premiers page max, sinon c'est le bordel
     for (int i = 1; i <= min(2, document.pageCount); i++) {
       final page = await document.getPage(i);
-      int scaleUp = 5; // 4 is an arbitrary number, we enlarge the image to improve text detection
+      int scaleUp = 5; // 5 is an arbitrary number, we enlarge the image to improve text detection
       final pageImage = await page.render(
         width: page.width.toInt() * scaleUp,
         height: page.height.toInt() * scaleUp,

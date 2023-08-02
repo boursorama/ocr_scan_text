@@ -15,6 +15,7 @@ dependencies:
   image: ^4.0.17
   pdf_render: ^1.4.0
   path_provider: ^2.0.15
+  file_picker: 4.6.1
 
 #dependency_overrides:
   # This is due to the fact that the package native_pdf_view use a version of the package

@@ -9,12 +9,12 @@ import 'package:ocr_scan_text/ocr_scan/widget/scan_widget.dart';
 
 /// Widget allowing "live" scanning using the camera
 class LiveScanWidget extends ScanWidget {
-  LiveScanWidget({
+  const LiveScanWidget({
     super.key,
     required super.scanModules,
-    required super.matchedResult,
+    required super.ocrTextResult,
     super.respectRatio = false,
-  }) : super(mode: Mode.camera);
+  });
 
   @override
   LiveScanWidgetState createState() => LiveScanWidgetState();
