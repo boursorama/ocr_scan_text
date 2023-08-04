@@ -7,7 +7,7 @@ import 'package:ocr_scan_text/ocr_scan/model/scan_result.dart';
 ///   - For an element to be validated, the "_counter" must be equal to or greater than "validateCountCorrelation".
 ///   - For an element to be visible, the counter must be at least 1.
 /// At each "frame", counter is updated.
-class MatchedCounter {
+class ScanMatchCounter {
   /// Scan module result found in image
   ScanResult scanResult;
 
@@ -35,7 +35,7 @@ class MatchedCounter {
   /// Determines if the result is validated
   bool validated = false;
 
-  MatchedCounter({
+  ScanMatchCounter({
     required this.scanResult,
     required this.validateCountCorrelation,
     required this.color,

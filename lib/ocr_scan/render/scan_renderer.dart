@@ -4,15 +4,15 @@ import 'dart:ui' as ui show Image;
 
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:ocr_scan_text/ocr_scan/model/scan_match_counter.dart';
 
-import '../model/matched_counter.dart';
 import '../model/shape/trapezoid.dart';
 import '../module/scan_module.dart';
 
 /// Overlays the results found by the ScanModules
 class ScanRenderer extends CustomPainter {
   /// Map containing each module and the list of associated results
-  final Map<ScanModule, List<MatchedCounter>> mapScanModules;
+  final Map<ScanModule, List<ScanMatchCounter>> mapScanModules;
 
   /// Orients the rendering according to the angle of the image
   final InputImageRotation imageRotation;
@@ -48,7 +48,7 @@ class ScanRenderer extends CustomPainter {
 
     mapScanModules.forEach(
       (module, matchedCounterList) {
-        for (MatchedCounter matchedCount in matchedCounterList) {
+        for (ScanMatchCounter matchedCount in matchedCounterList) {
           if (!matchedCount.visible) {
             /// If the result is not visible, do nothing.
             continue;

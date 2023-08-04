@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:ocr_scan_text/ocr_scan/helper/math_helper.dart';
+import 'package:ocr_scan_text/ocr_scan/model/scan_match_counter.dart';
 
-import '../model/matched_counter.dart';
 import '../model/recognizer_text/text_block.dart';
 import '../model/scan_result.dart';
 
@@ -25,7 +25,7 @@ abstract class ScanModule {
   bool _busyGenerated = false;
 
   /// The last list of results found by the module
-  List<MatchedCounter> matchedCounterList = [];
+  List<ScanMatchCounter> matchedCounterList = [];
 
   /// Module name (The name will be displayed in the final rendering)
   String? label;
@@ -96,7 +96,7 @@ abstract class ScanModule {
   }
 
   /// Launches the module result search then updates the list of old results
-  Future<List<MatchedCounter>> generateResult(
+  Future<List<ScanMatchCounter>> generateResult(
     List<TextBlock> textBlock,
     String text,
     Size imageSize,
@@ -117,7 +117,7 @@ abstract class ScanModule {
     /// We update the visibility counters of the MatchedCounter objects:
     /// - If still present in the new list, we up the counter
     /// - If not present, we down the counter and we delete if no longer visible
-    List<MatchedCounter> matchedCounterListUpdated = [];
+    List<ScanMatchCounter> matchedCounterListUpdated = [];
     for (var element in matchedCounterList) {
       bool found = false;
       for (var scanResult in newScanResult) {
@@ -147,7 +147,7 @@ abstract class ScanModule {
       }
       if (!found) {
         matchedCounterList.add(
-          MatchedCounter(
+          ScanMatchCounter(
             scanResult: scanResult,
             validateCountCorrelation: validateCountCorrelation,
             color: color,

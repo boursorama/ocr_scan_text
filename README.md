@@ -1,9 +1,9 @@
 # Flutter OCR Scan Text
- OCR Flutter
- `v1.0.0`
+OCR Flutter
+`v1.0.0`
 
 Flutter OCR Scan Text is a wrapper around the "[Google ML kit Text Recognition](https://pub.dev/packages/google_mlkit_text_recognition)" library.
-It helps to facilitate accurate text search and display of results from the camera.
+It helps to facilitate accurate text search and display of results from the camera. It also allows to manage text searches from an image or a pdf.
 
 ## Features
 
@@ -26,28 +26,28 @@ Note: The library uses the [Camera](https://pub.dev/packages/camera) package, be
 
 ```dart
 dependencies:
-  ocr_scan_text: x.x.x
+ocr_scan_text: x.x.x
 ```
 
-#### To use the library, import : 
+#### To use the library, import :
 
 ```dart
 import 'package:ocr_scan_text/ocr_scan_text.dart';
 ```
 
-#### To display the text detection widget:
+#### To display the text detection widget with camera:
 
 ```dart
-LiveScanWidget(
-  matchedResult: (ScanModule module, List<ScanResult> scanResult) {},
-  scanModules: [],
+ LiveScanWidget(
+ocrTextResult: (ocrTextResult) {},
+scanModules: [ScanAllModule()],
 )
 ```
 
 A LiveScanWidget needs a module list to start detection.
 Validated results will be returned to the "matchedResult" method.
 
-#### Create a scan module : 
+#### Create a scan module :
 
 In this example (see the `/example` folder), we consider all Elements to be results.
 
@@ -68,28 +68,45 @@ The purpose of a module is to search among the Blocks for a list of results (Sca
 ```dart
 @override
 Future<List<ScanResult>> matchedResult(List<BrsTextBlock> textBlock, String text) async {
-  List<ScanResult> list = [];
-  for (var block in textBlock) {
-    for (var line in block.lines) {
-      for (var element in line.elements) {
-        list.add(ScanResult(cleanedText: element.text, scannedElementList: [element]));
-      }
-    }
+ List<ScanResult> list = [];
+ for (var block in textBlock) {
+  for (var line in block.lines) {
+   for (var element in line.elements) {
+    list.add(ScanResult(cleanedText: element.text, scannedElementList: [element]));
+   }
   }
-  return list;
+ }
+ return list;
 }
 ```
 
-#### Start a module : 
+#### Start a module :
 
 ```dart
-monModule.start();
+module.start();
 ```
 
 #### Stop a module :
 
 ```dart
-monModule.stop();
+module.stop();
+```
+
+## Scan with file (Supported extension : png, jpg and pdf )
+
+This method open gallery for pick a pics and start text analyze. ( /!\ verify permissions before )
+```dart
+OcrScanService([module]).startScanWithPhoto();
+```
+
+This method open file folder for pick a file and start text analyze. ( /!\ verify permissions before )
+```dart
+OcrScanService([module]).startScanWithOpenFile();
+```
+
+This method start text analyze
+```dart
+OcrScanService([module]).startScanProcess(File('path/image.png'));
 ```
 
 
@@ -97,27 +114,20 @@ monModule.stop();
 
 You can use TextBlockHelper methods to help find results.
 
-###### TextBlockHelper.extractTextElementsWithRegex
+* TextBlockHelper.extractTextElementsWithRegex :
+  Find the list of elements that match with the regex
 
-Find the list of elements that match with the regex
+* TextBlockHelper.nextTextElement :
+  Find the next TextElement a right or left of TextElement
 
-###### TextBlockHelper.nextTextElement
+* TextBlockHelper.combineRecreateTextLine :
+  When texts are on the same line but distant, MLKit can create two different TextBlock. The "combineRecreateTextLine" method will create a TextLine, from a starting TextElement, taking into account the Elements of each TextBlock
 
-Find the next TextElement a right or left of TextElement 
+* TextBlockHelper.combineLeftTextElement :
+  Return a List of BrsTextElement with all BrsTextElement to the left of startElement including startElement.
 
-###### TextBlockHelper.combineRecreateTextLine
+* TextBlockHelper.combineRightTextElement :
+  Return a List of BrsTextElement with all BrsTextElement to the right of startElement including startElement.
 
-When texts are on the same line but distant, MLKit can create two different TextBlock.
-The "combineRecreateTextLine" method will create a TextLine, from a starting TextElement, taking into account the Elements of each TextBlock
-
-###### TextBlockHelper.combineLeftTextElement
-
-Return a List of BrsTextElement with all BrsTextElement to the left of startElement including startElement.
-
-###### TextBlockHelper.combineRightTextElement
-
-Return a List of BrsTextElement with all BrsTextElement to the right of startElement including startElement.
-
-###### TextBlockHelper.combineBetweenTextElement
-
-Return a List of BrsTextElement between startElement and endElement
+* TextBlockHelper.combineBetweenTextElement :
+  Return a List of BrsTextElement between startElement and endElement
