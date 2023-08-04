@@ -38,10 +38,7 @@ import 'package:ocr_scan_text/ocr_scan_text.dart';
 #### To display the text detection widget with camera:
 
 ```dart
- LiveScanWidget(
-ocrTextResult: (ocrTextResult) {},
-scanModules: [ScanAllModule()],
-)
+ LiveScanWidget(ocrTextResult: (ocrTextResult) {}, scanModules: [ScanAllModule()],)
 ```
 
 A LiveScanWidget needs a module list to start detection.
@@ -92,7 +89,13 @@ module.start();
 module.stop();
 ```
 
-## Scan with file (Supported extension : png, jpg and pdf )
+## Scan file with Widget (Supported extension : png, jpg and pdf )
+
+```dart
+StaticScanWidget(ocrTextResult: (ocrTextResult) {}, scanModules: [ScanAllModule()], file: File("path/image.png"));
+```
+
+## Scan file without Widget (Supported extension : png, jpg and pdf )
 
 This method open gallery for pick a pics and start text analyze. ( /!\ verify permissions before )
 ```dart
