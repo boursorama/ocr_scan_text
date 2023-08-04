@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image/image.dart' as img;
+import 'package:ocr_scan_text/ocr_scan/model/scan_match_counter.dart';
 import 'package:path/path.dart' as path;
 import 'package:pdf_render/pdf_render.dart';
 
@@ -168,14 +169,14 @@ class OcrScanService {
     }
 
     /// Start the text search for each module
-    Map<ScanModule, List<MatchedCounter>> mapModule = <ScanModule, List<MatchedCounter>>{};
+    Map<ScanModule, List<ScanMatchCounter>> mapModule = <ScanModule, List<ScanMatchCounter>>{};
     for (var scanModule in scanModules) {
       if (!scanModule.started) {
         continue;
       }
 
       /// Generate the results of each module
-      List<MatchedCounter> scanLines = await scanModule.generateResult(
+      List<ScanMatchCounter> scanLines = await scanModule.generateResult(
         recognizedText.blocks,
         scannedText,
         imageSize,
