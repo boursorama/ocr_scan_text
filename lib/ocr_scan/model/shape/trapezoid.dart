@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart' as ml_kit;
 import 'package:ocr_scan_text/ocr_scan/services/ocr_scan_service.dart';
 
 import '../recognizer_text/text_element.dart';
@@ -42,9 +42,9 @@ class Trapezoid {
   }
 
   /// Return the global trapezoid containing the list of Offsets
-  factory Trapezoid.fromElementsList(List<BrsTextElement> elements) {
+  factory Trapezoid.fromElementsList(List<TextElement> elements) {
     List<Offset> offsets = [];
-    for (BrsTextElement element in elements) {
+    for (TextElement element in elements) {
       offsets.add(element.trapezoid.topLeftOffset);
       offsets.add(element.trapezoid.bottomRightOffset);
       offsets.add(element.trapezoid.topRightOffset);
@@ -105,7 +105,7 @@ class Trapezoid {
   Trapezoid resizedTrapezoid(
     Size size,
     Size inputImageSize,
-    InputImageRotation rotation,
+    ml_kit.InputImageRotation rotation,
     double paddingWidth,
     double paddingHeight,
     double? adjustTranslateX,
@@ -181,7 +181,7 @@ class Trapezoid {
 
   double _translateX(
     double x,
-    InputImageRotation rotation,
+    ml_kit.InputImageRotation rotation,
     Size size,
     Size absoluteImageSize,
     double adjustTranslate,
@@ -190,9 +190,9 @@ class Trapezoid {
         ? absoluteImageSize.width
         : absoluteImageSize.height;
     switch (rotation) {
-      case InputImageRotation.rotation90deg:
+      case ml_kit.InputImageRotation.rotation90deg:
         return (x * size.width / denominator) + adjustTranslate;
-      case InputImageRotation.rotation270deg:
+      case ml_kit.InputImageRotation.rotation270deg:
         return (size.width - x * size.width / denominator) + adjustTranslate;
       default:
         return (x * size.width / absoluteImageSize.width) + adjustTranslate;
@@ -201,7 +201,7 @@ class Trapezoid {
 
   double _translateY(
     double y,
-    InputImageRotation rotation,
+    ml_kit.InputImageRotation rotation,
     Size size,
     Size absoluteImageSize,
     double adjustTranslate,
@@ -210,8 +210,8 @@ class Trapezoid {
         ? absoluteImageSize.height
         : absoluteImageSize.width;
     switch (rotation) {
-      case InputImageRotation.rotation90deg:
-      case InputImageRotation.rotation270deg:
+      case ml_kit.InputImageRotation.rotation90deg:
+      case ml_kit.InputImageRotation.rotation270deg:
         return (y * size.height / denominator) + adjustTranslate;
       default:
         return (y * size.height / absoluteImageSize.height) + adjustTranslate;

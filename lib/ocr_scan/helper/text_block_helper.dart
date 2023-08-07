@@ -21,11 +21,11 @@ class TextBlockHelper {
   ///     RegExp regExp = RegExp(r'are you');
   ///     Result : elementList = ['are', 'you']
   ///
-  static List<List<BrsTextElement>> extractTextElementsWithRegex(
-    List<BrsTextElement> textElements,
+  static List<List<TextElement>> extractTextElementsWithRegex(
+    List<TextElement> textElements,
     RegExp regExp,
   ) {
-    List<List<BrsTextElement>> listScannedText = [];
+    List<List<TextElement>> listScannedText = [];
     String text = '';
     for (var textElement in textElements) {
       text += '${textElements.first == textElement ? '' : ' '}${textElement.text}';
@@ -38,7 +38,7 @@ class TextBlockHelper {
       }
 
       /// Rebuild the new list of TextElements
-      List<BrsTextElement> foundElements = [];
+      List<TextElement> foundElements = [];
       int elementBeforeMatch = text.substring(0, match.start).split('').where((char) => char == ' ').length;
       int elementBetweenMatch =
           text.substring(match.start, match.end).split('').where((char) => char == ' ').length + 1;
@@ -62,7 +62,7 @@ class TextBlockHelper {
   ///     String text = 'are you';
   ///     Result : elementList = ['How','?']
   ///
-  static List<BrsTextElement> removeTextElement(List<BrsTextElement> elementList, String text) {
+  static List<TextElement> removeTextElement(List<TextElement> elementList, String text) {
     for (int i = 0; i < elementList.length; i++) {
       String concatenation = elementList[i].text;
       if (concatenation == text) {
@@ -95,9 +95,9 @@ class TextBlockHelper {
   ///     BrsTextElement startElement = 'are';
   ///     Result : BrsTextElement = ['you']
   ///
-  static BrsTextElement? nextTextElement(
-    List<BrsTextElement> startElements,
-    List<BrsTextBlock> blocks,
+  static TextElement? nextTextElement(
+    List<TextElement> startElements,
+    List<TextBlock> blocks,
     HorizontalDirection direction,
   ) {
     double angle;
@@ -126,11 +126,11 @@ class TextBlockHelper {
       startPoint.dy + (direction == HorizontalDirection.left ? -10000 : 10000) * sin(angle),
     );
 
-    List<BrsTextElement> sortedElement = _sortTextElement(List.from(blocks), direction);
+    List<TextElement> sortedElement = _sortTextElement(List.from(blocks), direction);
     int i = 0;
-    for (BrsTextElement element in sortedElement) {
+    for (TextElement element in sortedElement) {
       bool duplicated = false;
-      for (BrsTextElement startElement in startElements) {
+      for (TextElement startElement in startElements) {
         if (startElement == element) {
           duplicated = true;
           continue;
@@ -155,8 +155,8 @@ class TextBlockHelper {
     return null;
   }
 
-  static List<BrsTextElement> _sortTextElement(List<BrsTextBlock> blocks, HorizontalDirection direction) {
-    List<BrsTextElement> listElements = [];
+  static List<TextElement> _sortTextElement(List<TextBlock> blocks, HorizontalDirection direction) {
+    List<TextElement> listElements = [];
     for (var block in blocks) {
       for (var line in block.lines) {
         for (var element in line.elements) {
@@ -189,12 +189,12 @@ class TextBlockHelper {
   ///     BrsTextElement startElement = 'are';
   ///     Result : BrsTextElement = ['How','are','you','?','Welcome', '!']
   ///
-  static BrsTextLine combineRecreateTextLine(BrsTextElement startElement, List<BrsTextBlock> blocks) {
-    List<BrsTextElement> listTextElement = [startElement];
+  static TextLine combineRecreateTextLine(TextElement startElement, List<TextBlock> blocks) {
+    List<TextElement> listTextElement = [startElement];
 
     bool asNext = true;
     while (asNext) {
-      BrsTextElement? nextElement = nextTextElement(listTextElement, blocks, HorizontalDirection.left);
+      TextElement? nextElement = nextTextElement(listTextElement, blocks, HorizontalDirection.left);
       nextElement == null ? asNext = false : listTextElement.add(nextElement);
     }
 
@@ -202,7 +202,7 @@ class TextBlockHelper {
     asNext = true;
 
     while (asNext) {
-      BrsTextElement? nextElement = nextTextElement(listTextElement, blocks, HorizontalDirection.right);
+      TextElement? nextElement = nextTextElement(listTextElement, blocks, HorizontalDirection.right);
       nextElement == null ? asNext = false : listTextElement.add(nextElement);
     }
 
@@ -211,14 +211,14 @@ class TextBlockHelper {
       recreatedText += listTextElement.first == element ? element.text : ' ${element.text}';
     }
 
-    return BrsTextLine(
+    return TextLine(
       elements: listTextElement,
     );
   }
 
-  static List<BrsTextElement> _combineTextElement(
-    BrsTextElement startElement,
-    List<BrsTextBlock> blocks,
+  static List<TextElement> _combineTextElement(
+    TextElement startElement,
+    List<TextBlock> blocks,
     HorizontalDirection direction,
   ) {
     double angle;
@@ -238,12 +238,12 @@ class TextBlockHelper {
     // 10000 is an arbitrary number, we just want to make a big line
     int lineDistance = (direction == HorizontalDirection.right ? 10000 : -10000);
 
-    List<BrsTextElement> sortedElement = _sortTextElement(
+    List<TextElement> sortedElement = _sortTextElement(
       List.from(blocks),
       direction,
     );
-    List<BrsTextElement> newListTextElement = [startElement];
-    for (BrsTextElement element in sortedElement) {
+    List<TextElement> newListTextElement = [startElement];
+    for (TextElement element in sortedElement) {
       if (startElement == element) {
         continue;
       }
@@ -286,7 +286,7 @@ class TextBlockHelper {
   ///     BrsTextElement startElement = 'Welcome';
   ///     Result : BrsTextElement = ['How','are','you','?', 'Welcome']
   ///
-  static List<BrsTextElement> combineLeftTextElement(BrsTextElement startElement, List<BrsTextBlock> blocks) {
+  static List<TextElement> combineLeftTextElement(TextElement startElement, List<TextBlock> blocks) {
     return _combineTextElement(startElement, blocks, HorizontalDirection.left);
   }
 
@@ -297,7 +297,7 @@ class TextBlockHelper {
   ///     BrsTextElement startElement = 'you';
   ///     Result : BrsTextElement = ['you','?', 'Welcome', '!']
   ///
-  static List<BrsTextElement> combineRightTextElement(BrsTextElement startElement, List<BrsTextBlock> blocks) {
+  static List<TextElement> combineRightTextElement(TextElement startElement, List<TextBlock> blocks) {
     return _combineTextElement(startElement, blocks, HorizontalDirection.right);
   }
 
@@ -308,14 +308,14 @@ class TextBlockHelper {
   ///     BrsTextElement endElement = 'Welcome';
   ///     Result : BrsTextElement = ['you','?']
   ///
-  static List<BrsTextElement> combineBetweenTextElement(
-      BrsTextElement startElement, BrsTextElement endElement, List<BrsTextBlock> blocks) {
-    List<BrsTextElement> listTextElement = [];
+  static List<TextElement> combineBetweenTextElement(
+      TextElement startElement, TextElement endElement, List<TextBlock> blocks) {
+    List<TextElement> listTextElement = [];
 
     bool asNext = true;
 
     while (asNext) {
-      BrsTextElement? nextElement = nextTextElement(
+      TextElement? nextElement = nextTextElement(
         listTextElement.isEmpty ? [startElement] : listTextElement,
         blocks,
         HorizontalDirection.right,
@@ -330,8 +330,8 @@ class TextBlockHelper {
   }
 
   /// Returns the "main" (largest) text block
-  static BrsTextBlock? _findPrimaryBlock(List<BrsTextBlock> allBlocks) {
-    BrsTextBlock? longTextBlock;
+  static TextBlock? _findPrimaryBlock(List<TextBlock> allBlocks) {
+    TextBlock? longTextBlock;
     for (var block in allBlocks) {
       if (longTextBlock == null) {
         longTextBlock = block;

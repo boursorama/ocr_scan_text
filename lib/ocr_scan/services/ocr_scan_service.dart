@@ -3,7 +3,7 @@ import 'dart:ui' as ui show Image;
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart' as ml_kit;
 import 'package:image/image.dart' as img;
 import 'package:ocr_scan_text/ocr_scan/model/scan_match_counter.dart';
 import 'package:path/path.dart' as path;
@@ -24,7 +24,7 @@ class OcrScanService {
   List<ScanModule> scanModules;
 
   /// MLKit text detection object
-  final TextRecognizer textRecognizer = TextRecognizer();
+  final ml_kit.TextRecognizer textRecognizer = ml_kit.TextRecognizer();
 
   OcrScanService(
     this.scanModules,
@@ -104,7 +104,7 @@ class OcrScanService {
     ui.Image background = await decodeImageFromList(await imagePDF.file.readAsBytes());
 
     return await processImage(
-      InputImage.fromFilePath(imagePDF.file.path),
+      ml_kit.InputImage.fromFilePath(imagePDF.file.path),
       Size(
         background.width.toDouble(),
         background.height.toDouble(),
@@ -129,7 +129,7 @@ class OcrScanService {
     ui.Image background = await decodeImageFromList(await file.readAsBytes());
 
     return await processImage(
-      InputImage.fromFilePath(file.path),
+      ml_kit.InputImage.fromFilePath(file.path),
       Size(
         image.width.toDouble(),
         image.height.toDouble(),
@@ -143,22 +143,22 @@ class OcrScanService {
 
   /// Launch the search for results from the image for all the modules started
   Future<OcrTextRecognizerResult?> processImage(
-    InputImage inputImage,
+    ml_kit.InputImage inputImage,
     Size imageSize,
     ui.Image? background,
     Mode mode,
     List<ScanModule> scanModules,
-    TextRecognizer? recognizer,
+    ml_kit.TextRecognizer? recognizer,
   ) async {
     _actualMode = mode;
-    TextRecognizer textRecognizer = recognizer ?? TextRecognizer();
+    ml_kit.TextRecognizer textRecognizer = recognizer ?? ml_kit.TextRecognizer();
 
     /// Ask MLKit to return the list of TextBlocks in the image
     final recognizedText = await textRecognizer.processImage(inputImage);
 
     /// create a global String corresponding to the texts found by MLKIt
     String scannedText = '';
-    List<TextElement> textBlocks = [];
+    List<ml_kit.TextElement> textBlocks = [];
     for (final textBlock in recognizedText.blocks) {
       for (final element in textBlock.lines) {
         for (final textBlock in element.elements) {
@@ -191,7 +191,7 @@ class OcrScanService {
     /// Create a ScanRenderer to display the visual rendering of the results found
     var painter = ScanRenderer(
       mapScanModules: mapModule,
-      imageRotation: inputImage.metadata?.rotation ?? InputImageRotation.rotation90deg,
+      imageRotation: inputImage.metadata?.rotation ?? ml_kit.InputImageRotation.rotation90deg,
       imageSize: imageSize,
       background: background,
     );

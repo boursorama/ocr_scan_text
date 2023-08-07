@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart' as ml_kit;
 import 'package:ocr_scan_text/ocr_scan/model/recognizer_text/recognizer_text.dart';
 import 'package:ocr_scan_text/ocr_scan/model/recognizer_text/text_element.dart';
 import 'package:ocr_scan_text/ocr_scan/model/recognizer_text/text_line.dart';
@@ -8,17 +8,17 @@ import 'package:ocr_scan_text/ocr_scan/model/recognizer_text/text_line.dart';
 import '../shape/trapezoid.dart';
 
 /// Represents a TextBlock object of Ml Kit
-class BrsTextBlock extends BrsRecognizerText {
-  final List<BrsTextLine> lines;
+class TextBlock extends RecognizerText {
+  final List<TextLine> lines;
 
-  BrsTextBlock({
+  TextBlock({
     required this.lines,
   }) : super(
           text: _generateText(lines),
           trapezoid: _generateTrapezoid(lines),
         );
 
-  static String _generateText(List<BrsTextLine> lines) {
+  static String _generateText(List<TextLine> lines) {
     String text = '';
     for (var line in lines) {
       text += line == lines.first ? '' : '\n';
@@ -29,8 +29,8 @@ class BrsTextBlock extends BrsRecognizerText {
     return text;
   }
 
-  static Trapezoid _generateTrapezoid(List<BrsTextLine> lines) {
-    List<BrsTextElement> elements = [];
+  static Trapezoid _generateTrapezoid(List<TextLine> lines) {
+    List<TextElement> elements = [];
     for (var line in lines) {
       for (var element in line.elements) {
         elements.add(element);
@@ -39,34 +39,34 @@ class BrsTextBlock extends BrsRecognizerText {
     return Trapezoid.fromElementsList(elements);
   }
 
-  /// Returns an instance of [BrsTextBlock] from a given [textBlock].
-  factory BrsTextBlock.fromTextBlock(
-    TextBlock textBlock,
+  /// Returns an instance of [TextBlock] from a given [textBlock].
+  factory TextBlock.fromTextBlock(
+    ml_kit.TextBlock textBlock,
     Size imageSize,
   ) {
-    List<BrsTextLine> lines = [];
+    List<TextLine> lines = [];
     for (var line in textBlock.lines) {
-      lines.add(BrsTextLine.fromTextLine(
+      lines.add(TextLine.fromTextLine(
         line,
         imageSize,
       ));
     }
-    return BrsTextBlock(
+    return TextBlock(
       lines: lines,
     );
   }
 
-  BrsTextBlock copyWith({
-    List<BrsTextLine>? lines,
+  TextBlock copyWith({
+    List<TextLine>? lines,
   }) {
-    return BrsTextBlock(
+    return TextBlock(
       lines: lines ?? this.lines,
     );
   }
 
   @override
   bool operator ==(Object other) =>
-      other is BrsTextBlock &&
+      other is TextBlock &&
       runtimeType == other.runtimeType &&
       trapezoid == other.trapezoid &&
       text == other.text &&

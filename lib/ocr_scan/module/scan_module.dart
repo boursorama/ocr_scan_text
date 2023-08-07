@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart' as ml_kit;
 import 'package:ocr_scan_text/ocr_scan/helper/math_helper.dart';
 import 'package:ocr_scan_text/ocr_scan/model/scan_match_counter.dart';
 
@@ -54,7 +54,7 @@ abstract class ScanModule {
 
   /// Method to be defined in each module to process the text found in the image and output a list of results
   Future<List<ScanResult>> matchedResult(
-    List<BrsTextBlock> textBlock,
+    List<TextBlock> textBlock,
     String text,
   );
 
@@ -81,13 +81,13 @@ abstract class ScanModule {
   }
 
   /// Convert MlKit TextBlock to BrsTextBlock to ignore MLKit
-  List<BrsTextBlock> _convertTextBlocks(
-    List<TextBlock> textBlock,
+  List<TextBlock> _convertTextBlocks(
+    List<ml_kit.TextBlock> textBlock,
     Size imageSize,
   ) {
-    List<BrsTextBlock> brsTextBlock = [];
+    List<TextBlock> brsTextBlock = [];
     for (var block in textBlock) {
-      brsTextBlock.add(BrsTextBlock.fromTextBlock(
+      brsTextBlock.add(TextBlock.fromTextBlock(
         block,
         imageSize,
       ));
@@ -97,7 +97,7 @@ abstract class ScanModule {
 
   /// Launches the module result search then updates the list of old results
   Future<List<ScanMatchCounter>> generateResult(
-    List<TextBlock> textBlock,
+    List<ml_kit.TextBlock> textBlock,
     String text,
     Size imageSize,
   ) async {
