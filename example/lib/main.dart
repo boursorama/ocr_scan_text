@@ -18,7 +18,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Scan"),
+        title: const Text("Scan"),
       ),
       body: Center(
         child: SizedBox(
@@ -33,12 +33,7 @@ class _MyAppState extends State<MyApp> {
   Widget _buildLiveScan() {
     return LiveScanWidget(
       ocrTextResult: (ocrTextResult) {
-        ocrTextResult.mapResult.forEach((module, result) {
-          for (var element in result) {
-            print("matchedResult : ${element.cleanedText}");
-            // module.stop();
-          }
-        });
+        ocrTextResult.mapResult.forEach((module, result) {});
       },
       scanModules: [ScanAllModule()],
     );
