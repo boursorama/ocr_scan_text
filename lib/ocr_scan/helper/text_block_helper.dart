@@ -127,7 +127,6 @@ class TextBlockHelper {
     );
 
     List<TextElement> sortedElement = _sortTextElement(List.from(blocks), direction);
-    int i = 0;
     for (TextElement element in sortedElement) {
       bool duplicated = false;
       for (TextElement startElement in startElements) {
@@ -149,8 +148,6 @@ class TextBlockHelper {
       )) {
         return element;
       }
-
-      i++;
     }
     return null;
   }
@@ -204,11 +201,6 @@ class TextBlockHelper {
     while (asNext) {
       TextElement? nextElement = nextTextElement(listTextElement, blocks, HorizontalDirection.right);
       nextElement == null ? asNext = false : listTextElement.add(nextElement);
-    }
-
-    String recreatedText = '';
-    for (var element in listTextElement) {
-      recreatedText += listTextElement.first == element ? element.text : ' ${element.text}';
     }
 
     return TextLine(
