@@ -7,7 +7,7 @@ import 'package:ocr_scan_text/ocr_scan/model/recognizer_text/text_line.dart';
 import 'test_helper.dart';
 
 void main() {
-  List<TextBlock> mockedListOfBrsTextBlock() {
+  List<TextBlock> mockedListOfTextBlock() {
     TextBlock textBlock1 = TestHelper.createTextBlock(
       'How are you ? are you fine ?',
       0,
@@ -34,7 +34,7 @@ void main() {
   test('TextBlockHelper_extractTextElementsWithRegex', () {
     RegExp regExp = RegExp(r'are you');
     List<List<TextElement>> list = TextBlockHelper.extractTextElementsWithRegex(
-      mockedListOfBrsTextBlock().first.lines.first.elements,
+      mockedListOfTextBlock().first.lines.first.elements,
       regExp,
     );
 
@@ -46,7 +46,7 @@ void main() {
 
   test('TextBlockHelper_removeTextElement', () {
     List<TextElement> list = TextBlockHelper.removeTextElement(
-      mockedListOfBrsTextBlock().first.lines.first.elements,
+      mockedListOfTextBlock().first.lines.first.elements,
       'are you',
     );
 
@@ -56,7 +56,7 @@ void main() {
   });
 
   test('TextBlockHelper_nextTextElement', () {
-    TextBlock textBlock = mockedListOfBrsTextBlock().first;
+    TextBlock textBlock = mockedListOfTextBlock().first;
     TextElement? nextElement = TextBlockHelper.nextTextElement(
       [textBlock.lines.first.elements[1]],
       [textBlock],
@@ -67,7 +67,7 @@ void main() {
   });
 
   test('TextBlockHelper_combineRecreateTextLine', () {
-    List<TextBlock> textBlocks = mockedListOfBrsTextBlock();
+    List<TextBlock> textBlocks = mockedListOfTextBlock();
 
     TextLine textLine = TextBlockHelper.combineRecreateTextLine(
       textBlocks.first.lines.first.elements[1],
@@ -78,7 +78,7 @@ void main() {
   });
 
   test('TextBlockHelper_combineLeftTextElement', () {
-    List<TextBlock> textBlocks = mockedListOfBrsTextBlock();
+    List<TextBlock> textBlocks = mockedListOfTextBlock();
     List<TextElement> elementsList = TextBlockHelper.combineLeftTextElement(
       textBlocks.first.lines.first.elements.last,
       textBlocks,
@@ -90,7 +90,7 @@ void main() {
   });
 
   test('TextBlockHelper_combineRightTextElement', () {
-    List<TextBlock> textBlocks = mockedListOfBrsTextBlock();
+    List<TextBlock> textBlocks = mockedListOfTextBlock();
     List<TextElement> elementsList = TextBlockHelper.combineRightTextElement(
       textBlocks.first.lines.first.elements[2],
       textBlocks,
@@ -102,7 +102,7 @@ void main() {
   });
 
   test('TextBlockHelper_combineBetweenTextElement', () {
-    List<TextBlock> textBlocks = mockedListOfBrsTextBlock();
+    List<TextBlock> textBlocks = mockedListOfTextBlock();
     List<TextElement> elementsList = TextBlockHelper.combineBetweenTextElement(
       textBlocks.first.lines.first.elements[0],
       textBlocks.first.lines.first.elements[3],
