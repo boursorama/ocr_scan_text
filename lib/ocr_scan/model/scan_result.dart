@@ -13,7 +13,7 @@ class ScanResult {
   final String? _cleanedText;
 
   /// List of all TextElements forming the result
-  List<BrsTextElement> scannedElementList;
+  List<TextElement> scannedElementList;
 
   ScanResult({
     String? cleanedText,
@@ -49,7 +49,7 @@ class ScanResult {
     }
 
     List<Offset> offsets = [];
-    for (BrsTextElement element in scannedElementList) {
+    for (TextElement element in scannedElementList) {
       offsets.add(element.trapezoid.topLeftOffset);
       offsets.add(element.trapezoid.bottomRightOffset);
       offsets.add(element.trapezoid.topRightOffset);

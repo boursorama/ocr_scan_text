@@ -1,13 +1,13 @@
 import 'dart:ui';
 
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart' as ml_kit;
 import 'package:ocr_scan_text/ocr_scan/model/recognizer_text/recognizer_text.dart';
 
 import '../shape/trapezoid.dart';
 
 /// Represents a TextElement object of Ml Kit
-class BrsTextElement extends BrsRecognizerText {
-  BrsTextElement({
+class TextElement extends RecognizerText {
+  TextElement({
     required String text,
     required Trapezoid trapezoid,
   }) : super(
@@ -15,11 +15,11 @@ class BrsTextElement extends BrsRecognizerText {
           trapezoid: trapezoid,
         );
 
-  factory BrsTextElement.fromTextElement(
-    TextElement textElement,
+  factory TextElement.fromTextElement(
+    ml_kit.TextElement textElement,
     Size imageSize,
   ) {
-    return BrsTextElement(
+    return TextElement(
       text: textElement.text,
       trapezoid: Trapezoid.fromCornerPoint(
         textElement.cornerPoints,
@@ -28,11 +28,11 @@ class BrsTextElement extends BrsRecognizerText {
     );
   }
 
-  BrsTextElement copyWith({
+  TextElement copyWith({
     String? text,
     Trapezoid? trapezoid,
   }) {
-    return BrsTextElement(
+    return TextElement(
       text: text ?? this.text,
       trapezoid: trapezoid ?? this.trapezoid,
     );
@@ -40,7 +40,7 @@ class BrsTextElement extends BrsRecognizerText {
 
   @override
   bool operator ==(Object other) =>
-      other is BrsTextElement && runtimeType == other.runtimeType && trapezoid == other.trapezoid && text == other.text;
+      other is TextElement && runtimeType == other.runtimeType && trapezoid == other.trapezoid && text == other.text;
 
   @override
   int get hashCode => trapezoid.hashCode ^ text.hashCode;

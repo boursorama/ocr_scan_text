@@ -1,11 +1,11 @@
 import '../shape/trapezoid.dart';
 
 /// Base object to represent a MlKit object
-abstract class BrsRecognizerText {
+abstract class RecognizerText {
   final String text;
   final Trapezoid trapezoid;
 
-  BrsRecognizerText({
+  RecognizerText({
     required this.text,
     required this.trapezoid,
   });

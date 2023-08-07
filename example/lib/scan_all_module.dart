@@ -11,7 +11,7 @@ class ScanAllModule extends ScanModule {
 
   @override
   Future<List<ScanResult>> matchedResult(
-    List<BrsTextBlock> textBlock,
+    List<TextBlock> textBlock,
     String text,
   ) async {
     List<ScanResult> list = [];

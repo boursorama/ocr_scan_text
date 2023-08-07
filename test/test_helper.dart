@@ -8,15 +8,15 @@ import 'package:ocr_scan_text/ocr_scan/model/shape/trapezoid.dart';
 class TestHelper {
   /// Return a BrsTextBlock starting at position startX and startY.
   /// For each '\n' in text, a BrsTextLine will be created.
-  static BrsTextBlock createTextBlock(String text, double startX, double startY) {
+  static TextBlock createTextBlock(String text, double startX, double startY) {
     List<String> splitByLine = text.split('\n');
-    List<BrsTextLine> linesList = [];
+    List<TextLine> linesList = [];
     for (var line in splitByLine) {
       List<String> splitElements = line.split(' ');
-      List<BrsTextElement> elementsList = [];
+      List<TextElement> elementsList = [];
       for (var element in splitElements) {
         elementsList.add(
-          BrsTextElement(
+          TextElement(
             text: element,
             trapezoid: _createTrapezoid(
               startX: startX,
@@ -28,14 +28,14 @@ class TestHelper {
       }
 
       linesList.add(
-        BrsTextLine(
+        TextLine(
           elements: elementsList,
         ),
       );
       startY = linesList.last.trapezoid.bottomRightOffset.dx + 10;
     }
 
-    return BrsTextBlock(
+    return TextBlock(
       lines: linesList,
     );
   }
