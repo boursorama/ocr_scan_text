@@ -64,7 +64,7 @@ ScanAllModule() : super(label: 'All',color: Colors.redAccent.withOpacity(0.3), v
 The purpose of a module is to search among the Blocks for a list of results (ScanResult) and to return it using the "matchedResult" method.
 ```dart
 @override
-Future<List<ScanResult>> matchedResult(List<BrsTextBlock> textBlock, String text) async {
+Future<List<ScanResult>> matchedResult(List<TextBlock> textBlock, String text) async {
  List<ScanResult> list = [];
  for (var block in textBlock) {
   for (var line in block.lines) {
@@ -127,10 +127,10 @@ You can use TextBlockHelper methods to help find results.
   When texts are on the same line but distant, MLKit can create two different TextBlock. The "combineRecreateTextLine" method will create a TextLine, from a starting TextElement, taking into account the Elements of each TextBlock
 
 * TextBlockHelper.combineLeftTextElement :
-  Return a List of BrsTextElement with all BrsTextElement to the left of startElement including startElement.
+  Return a List of TextElement with all TextElement to the left of startElement including startElement.
 
 * TextBlockHelper.combineRightTextElement :
-  Return a List of BrsTextElement with all BrsTextElement to the right of startElement including startElement.
+  Return a List of TextElement with all TextElement to the right of startElement including startElement.
 
 * TextBlockHelper.combineBetweenTextElement :
-  Return a List of BrsTextElement between startElement and endElement
+  Return a List of TextElement between startElement and endElement
