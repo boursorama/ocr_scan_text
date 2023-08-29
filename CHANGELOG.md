@@ -1,3 +1,7 @@
+## 1.3.0
+
+- Updated `file_picker` dependency, watch out for `ffi` version
+
 ## 1.2.1
 
 - Fixed `Trapezoid` position of `TextElement`.
