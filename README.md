@@ -1,6 +1,6 @@
 # Flutter OCR Scan Text
 OCR Flutter
-`v1.2.1`
+`v1.3.0`
 
 Flutter OCR Scan Text is a wrapper around the "[Google ML kit Text Recognition](https://pub.dev/packages/google_mlkit_text_recognition)" library.
 It helps to facilitate accurate text search and display of results from the camera. It also allows to manage text searches from an image or a pdf.
