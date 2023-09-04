@@ -30,7 +30,8 @@ class MathHelper {
     double t2 = ((q1.dx - p1.dx) * dy2 - (q1.dy - p1.dy) * dx2) / crossProduct;
     double u2 = ((p1.dx - q1.dx) * dy1 - (p1.dy - q1.dy) * dx1) / crossProduct;
 
-    if (t1 >= 0 && t1 <= 1 && u1 >= 0 && u1 <= 1 || t2 >= 0 && t2 <= 1 && u2 >= 0 && u2 <= 1) {
+    if (t1 >= 0 && t1 <= 1 && u1 >= 0 && u1 <= 1 ||
+        t2 >= 0 && t2 <= 1 && u2 >= 0 && u2 <= 1) {
       // Segments intersect at a point
       return true;
     }

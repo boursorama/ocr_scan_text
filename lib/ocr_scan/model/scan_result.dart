@@ -60,7 +60,10 @@ class ScanResult {
 
   @override
   bool operator ==(Object other) =>
-      other is ScanResult && runtimeType == other.runtimeType && cleanedText == cleanedText && trapezoid == trapezoid;
+      other is ScanResult &&
+      runtimeType == other.runtimeType &&
+      cleanedText == cleanedText &&
+      trapezoid == trapezoid;
 
   @override
   int get hashCode => cleanedText.hashCode ^ trapezoid.hashCode;

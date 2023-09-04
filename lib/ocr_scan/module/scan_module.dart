@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart' as ml_kit;
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart'
+    as ml_kit;
 import 'package:ocr_scan_text/ocr_scan/helper/math_helper.dart';
 import 'package:ocr_scan_text/ocr_scan/model/scan_match_counter.dart';
 

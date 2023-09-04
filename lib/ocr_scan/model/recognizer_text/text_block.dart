@@ -1,6 +1,7 @@
 import 'dart:ui';
 
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart' as ml_kit;
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart'
+    as ml_kit;
 import 'package:ocr_scan_text/ocr_scan/model/recognizer_text/recognizer_text.dart';
 import 'package:ocr_scan_text/ocr_scan/model/recognizer_text/text_element.dart';
 import 'package:ocr_scan_text/ocr_scan/model/recognizer_text/text_line.dart';
@@ -23,7 +24,8 @@ class TextBlock extends RecognizerText {
     for (var line in lines) {
       text += line == lines.first ? '' : '\n';
       for (var element in line.elements) {
-        text += element == line.elements.first ? element.text : ' ${element.text}';
+        text +=
+            element == line.elements.first ? element.text : ' ${element.text}';
       }
     }
     return text;

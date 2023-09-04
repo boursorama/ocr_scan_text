@@ -26,7 +26,8 @@ class StaticScanWidgetState extends ScanWidgetState<StaticScanWidget> {
   }
 
   Future<void> _startProcess() async {
-    OcrTextRecognizerResult? result = await OcrScanService(widget.scanModules).startScanProcess(widget.file);
+    OcrTextRecognizerResult? result =
+        await OcrScanService(widget.scanModules).startScanProcess(widget.file);
     if (result == null) {
       return;
     }

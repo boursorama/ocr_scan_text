@@ -33,7 +33,8 @@ class ScanRenderer extends CustomPainter {
     final imageSize = Size(image.width.toDouble(), image.height.toDouble());
     final FittedSizes sizes = applyBoxFit(BoxFit.contain, imageSize, size);
 
-    final Rect dstRect = Alignment.center.inscribe(sizes.destination, Offset.zero & size);
+    final Rect dstRect =
+        Alignment.center.inscribe(sizes.destination, Offset.zero & size);
     canvas.drawImageRect(image, Offset.zero & imageSize, dstRect, Paint());
     return sizes.destination;
   }
@@ -56,14 +57,19 @@ class ScanRenderer extends CustomPainter {
 
           /// Resize the trapezoid of the result to adapt it to the size of the preview of the camera
           double padding = 8;
-          Trapezoid trapezoid = matchedCount.scanResult.trapezoid.resizedTrapezoid(
+          Trapezoid trapezoid =
+              matchedCount.scanResult.trapezoid.resizedTrapezoid(
             backgroundSize ?? size,
             imageSize,
             imageRotation,
             padding,
             padding,
-            backgroundSize != null ? (size.width - backgroundSize.width) / 2 : 0,
-            backgroundSize != null ? (size.height - backgroundSize.height) / 2 : 0,
+            backgroundSize != null
+                ? (size.width - backgroundSize.width) / 2
+                : 0,
+            backgroundSize != null
+                ? (size.height - backgroundSize.height) / 2
+                : 0,
           );
 
           canvas = _setCanvasPosition(canvas, size, trapezoid);
@@ -88,16 +94,20 @@ class ScanRenderer extends CustomPainter {
           double lerp = lerpDouble(
                 1,
                 2.8, // arbitrary value
-                ((angle < 0 ? -angle : angle) / 90) * ((angle < 0 ? -angle : angle) / 90),
+                ((angle < 0 ? -angle : angle) / 90) *
+                    ((angle < 0 ? -angle : angle) / 90),
               ) ??
               1;
 
           /// idth calculated from modified canvas angle
-          double width = (trapezoid.topRightOffset.dx - trapezoid.topLeftOffset.dx) * lerp;
+          double width =
+              (trapezoid.topRightOffset.dx - trapezoid.topLeftOffset.dx) * lerp;
 
           /// Height calculated from modified canvas angle
-          double height = trapezoid.bottomRightOffset.dy - trapezoid.topRightOffset.dy;
-          if (trapezoid.bottomLeftOffset.dy - trapezoid.topLeftOffset.dy > height) {
+          double height =
+              trapezoid.bottomRightOffset.dy - trapezoid.topRightOffset.dy;
+          if (trapezoid.bottomLeftOffset.dy - trapezoid.topLeftOffset.dy >
+              height) {
             height = trapezoid.bottomLeftOffset.dy - trapezoid.topLeftOffset.dy;
           }
 

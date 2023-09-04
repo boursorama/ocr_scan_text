@@ -72,8 +72,11 @@ class ScanMatchCounter {
 
   /// Level of progress in % before validation of the result
   double progressCorrelation() {
-    int correlation = validateCountCorrelation > 0 ? validateCountCorrelation : 1;
-    return ((_counter / correlation) * 100) > 100 ? 100 : (_counter / correlation) * 100;
+    int correlation =
+        validateCountCorrelation > 0 ? validateCountCorrelation : 1;
+    return ((_counter / correlation) * 100) > 100
+        ? 100
+        : (_counter / correlation) * 100;
   }
 
   /// Return a color so the opacity is tied to the progress
