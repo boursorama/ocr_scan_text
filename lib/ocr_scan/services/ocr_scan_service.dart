@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart' as ml_kit;
 import 'package:image/image.dart' as img;
+import 'package:image_picker/image_picker.dart';
 import 'package:ocr_scan_text/ocr_scan/model/scan_match_counter.dart';
 import 'package:path/path.dart' as path;
 import 'package:pdf_render/pdf_render.dart';
@@ -31,13 +32,14 @@ class OcrScanService {
   );
 
   Future<OcrTextRecognizerResult?> startScanWithPhoto() async {
-    return _startStaticScanProcess(
-      await FilePicker.platform.pickFiles(
-        type: FileType.image,
-        allowCompression: false,
-        allowMultiple: false,
-      ),
-    );
+    // FilePicker don't work with iOS LivePhoto
+    final ImagePicker picker = ImagePicker();
+    final XFile? file = await picker.pickImage(source: ImageSource.gallery);
+    if (file == null) {
+      return null;
+    }
+
+    return startScanProcess(File(file.path));
   }
 
   Future<OcrTextRecognizerResult?> startScanWithOpenFile() async {
@@ -49,6 +51,7 @@ class OcrScanService {
         allowedExtensions: [
           'png',
           'jpg',
+          'jpeg',
           'pdf',
         ],
       ),
