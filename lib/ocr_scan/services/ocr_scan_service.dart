@@ -3,7 +3,8 @@ import 'dart:ui' as ui show Image;
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart' as ml_kit;
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart'
+    as ml_kit;
 import 'package:image/image.dart' as img;
 import 'package:ocr_scan_text/ocr_scan/model/scan_match_counter.dart';
 import 'package:path/path.dart' as path;
@@ -55,7 +56,8 @@ class OcrScanService {
     );
   }
 
-  Future<OcrTextRecognizerResult?> _startStaticScanProcess(FilePickerResult? result) async {
+  Future<OcrTextRecognizerResult?> _startStaticScanProcess(
+      FilePickerResult? result) async {
     if (result == null) {
       return null;
     }
@@ -73,7 +75,10 @@ class OcrScanService {
   ) async {
     String extension = path.extension(file.path).toLowerCase();
 
-    assert(extension == '.pdf' || extension == '.png' || extension == '.jpg' || extension == '.jpeg');
+    assert(extension == '.pdf' ||
+        extension == '.png' ||
+        extension == '.jpg' ||
+        extension == '.jpeg');
     if (extension == '.pdf') {
       final PdfDocument document = await PdfDocument.openFile(
         file.path,
@@ -82,7 +87,9 @@ class OcrScanService {
         document,
         scanModules,
       );
-    } else if (extension == '.png' || extension == '.jpg' || extension == '.jpeg') {
+    } else if (extension == '.png' ||
+        extension == '.jpg' ||
+        extension == '.jpeg') {
       return await _processStaticImage(
         file,
         scanModules,
@@ -101,7 +108,8 @@ class OcrScanService {
       return null;
     }
 
-    ui.Image background = await decodeImageFromList(await imagePDF.file.readAsBytes());
+    ui.Image background =
+        await decodeImageFromList(await imagePDF.file.readAsBytes());
 
     return await processImage(
       ml_kit.InputImage.fromFilePath(imagePDF.file.path),
@@ -151,7 +159,8 @@ class OcrScanService {
     ml_kit.TextRecognizer? recognizer,
   ) async {
     _actualMode = mode;
-    ml_kit.TextRecognizer textRecognizer = recognizer ?? ml_kit.TextRecognizer();
+    ml_kit.TextRecognizer textRecognizer =
+        recognizer ?? ml_kit.TextRecognizer();
 
     /// Ask MLKit to return the list of TextBlocks in the image
     final recognizedText = await textRecognizer.processImage(inputImage);
@@ -169,7 +178,8 @@ class OcrScanService {
     }
 
     /// Start the text search for each module
-    Map<ScanModule, List<ScanMatchCounter>> mapModule = <ScanModule, List<ScanMatchCounter>>{};
+    Map<ScanModule, List<ScanMatchCounter>> mapModule =
+        <ScanModule, List<ScanMatchCounter>>{};
     for (var scanModule in scanModules) {
       if (!scanModule.started) {
         continue;
@@ -191,12 +201,14 @@ class OcrScanService {
     /// Create a ScanRenderer to display the visual rendering of the results found
     var painter = ScanRenderer(
       mapScanModules: mapModule,
-      imageRotation: inputImage.metadata?.rotation ?? ml_kit.InputImageRotation.rotation90deg,
+      imageRotation: inputImage.metadata?.rotation ??
+          ml_kit.InputImageRotation.rotation90deg,
       imageSize: imageSize,
       background: background,
     );
 
-    Map<ScanModule, List<ScanResult>> mapResult = <ScanModule, List<ScanResult>>{};
+    Map<ScanModule, List<ScanResult>> mapResult =
+        <ScanModule, List<ScanResult>>{};
     mapModule.forEach((key, matchCounterList) {
       List<ScanResult> list = matchCounterList
           .where(

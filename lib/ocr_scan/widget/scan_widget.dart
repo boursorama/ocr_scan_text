@@ -57,7 +57,8 @@ class ScanWidgetState<T extends ScanWidget> extends State<T> {
   }
 
   /// Launch the search for results from the image for all the modules started
-  Future<void> processImage(InputImage inputImage, Size imageSize, ui.Image? background) async {
+  Future<void> processImage(
+      InputImage inputImage, Size imageSize, ui.Image? background) async {
     if (_isBusy) return;
     _isBusy = true;
 

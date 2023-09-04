@@ -39,7 +39,9 @@ class LiveScanWidgetState extends ScanWidgetState<LiveScanWidget> {
   /// Display the camera widget as soon as it is ready
   @override
   Widget build(BuildContext context) {
-    return _controller == null || _controller?.value == null || _controller?.value.isInitialized == false
+    return _controller == null ||
+            _controller?.value == null ||
+            _controller?.value.isInitialized == false
         ? Container()
         : _cameraWidget();
   }
@@ -102,10 +104,12 @@ class LiveScanWidgetState extends ScanWidgetState<LiveScanWidget> {
     imageSize = Size(image.width.toDouble(), image.height.toDouble());
 
     final camera = _cameras[0];
-    final imageRotation = InputImageRotationValue.fromRawValue(camera.sensorOrientation);
+    final imageRotation =
+        InputImageRotationValue.fromRawValue(camera.sensorOrientation);
     if (imageRotation == null) return;
 
-    final inputImageFormat = InputImageFormatValue.fromRawValue(image.format.raw as int);
+    final inputImageFormat =
+        InputImageFormatValue.fromRawValue(image.format.raw as int);
     if (inputImageFormat == null) return;
 
     final planeData = image.planes.map(

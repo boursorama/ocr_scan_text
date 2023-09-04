@@ -28,7 +28,8 @@ class TextBlockHelper {
     List<List<TextElement>> listScannedText = [];
     String text = '';
     for (var textElement in textElements) {
-      text += '${textElements.first == textElement ? '' : ' '}${textElement.text}';
+      text +=
+          '${textElements.first == textElement ? '' : ' '}${textElement.text}';
     }
 
     List<RegExpMatch> matchs = regExp.allMatches(text).toList();
@@ -39,9 +40,17 @@ class TextBlockHelper {
 
       /// Rebuild the new list of TextElements
       List<TextElement> foundElements = [];
-      int elementBeforeMatch = text.substring(0, match.start).split('').where((char) => char == ' ').length;
-      int elementBetweenMatch =
-          text.substring(match.start, match.end).split('').where((char) => char == ' ').length + 1;
+      int elementBeforeMatch = text
+          .substring(0, match.start)
+          .split('')
+          .where((char) => char == ' ')
+          .length;
+      int elementBetweenMatch = text
+              .substring(match.start, match.end)
+              .split('')
+              .where((char) => char == ' ')
+              .length +
+          1;
 
       for (int i = 0; i < elementBetweenMatch; i++) {
         if (elementBeforeMatch + i < textElements.length) {
@@ -62,7 +71,8 @@ class TextBlockHelper {
   ///     String text = 'are you';
   ///     Result : elementList = ['How','?']
   ///
-  static List<TextElement> removeTextElement(List<TextElement> elementList, String text) {
+  static List<TextElement> removeTextElement(
+      List<TextElement> elementList, String text) {
     for (int i = 0; i < elementList.length; i++) {
       String concatenation = elementList[i].text;
       if (concatenation == text) {
@@ -117,16 +127,21 @@ class TextBlockHelper {
     Offset startPoint = Offset(
       startElements.last.trapezoid.topLeftOffset.dx,
       startElements.last.trapezoid.topLeftOffset.dy +
-          (startElements.last.trapezoid.bottomLeftOffset.dy - startElements.last.trapezoid.topLeftOffset.dy) / 2,
+          (startElements.last.trapezoid.bottomLeftOffset.dy -
+                  startElements.last.trapezoid.topLeftOffset.dy) /
+              2,
     );
 
     // 10000 is an arbitrary number, we just want to make a big line
     Offset endPoint = Offset(
-      startPoint.dx + (direction == HorizontalDirection.left ? -10000 : 10000) * cos(angle),
-      startPoint.dy + (direction == HorizontalDirection.left ? -10000 : 10000) * sin(angle),
+      startPoint.dx +
+          (direction == HorizontalDirection.left ? -10000 : 10000) * cos(angle),
+      startPoint.dy +
+          (direction == HorizontalDirection.left ? -10000 : 10000) * sin(angle),
     );
 
-    List<TextElement> sortedElement = _sortTextElement(List.from(blocks), direction);
+    List<TextElement> sortedElement =
+        _sortTextElement(List.from(blocks), direction);
     for (TextElement element in sortedElement) {
       bool duplicated = false;
       for (TextElement startElement in startElements) {
@@ -152,7 +167,8 @@ class TextBlockHelper {
     return null;
   }
 
-  static List<TextElement> _sortTextElement(List<TextBlock> blocks, HorizontalDirection direction) {
+  static List<TextElement> _sortTextElement(
+      List<TextBlock> blocks, HorizontalDirection direction) {
     List<TextElement> listElements = [];
     for (var block in blocks) {
       for (var line in block.lines) {
@@ -186,12 +202,14 @@ class TextBlockHelper {
   ///     BrsTextElement startElement = 'are';
   ///     Result : BrsTextElement = ['How','are','you','?','Welcome', '!']
   ///
-  static TextLine combineRecreateTextLine(TextElement startElement, List<TextBlock> blocks) {
+  static TextLine combineRecreateTextLine(
+      TextElement startElement, List<TextBlock> blocks) {
     List<TextElement> listTextElement = [startElement];
 
     bool asNext = true;
     while (asNext) {
-      TextElement? nextElement = nextTextElement(listTextElement, blocks, HorizontalDirection.left);
+      TextElement? nextElement =
+          nextTextElement(listTextElement, blocks, HorizontalDirection.left);
       nextElement == null ? asNext = false : listTextElement.add(nextElement);
     }
 
@@ -199,7 +217,8 @@ class TextBlockHelper {
     asNext = true;
 
     while (asNext) {
-      TextElement? nextElement = nextTextElement(listTextElement, blocks, HorizontalDirection.right);
+      TextElement? nextElement =
+          nextTextElement(listTextElement, blocks, HorizontalDirection.right);
       nextElement == null ? asNext = false : listTextElement.add(nextElement);
     }
 
@@ -228,7 +247,8 @@ class TextBlockHelper {
     );
 
     // 10000 is an arbitrary number, we just want to make a big line
-    int lineDistance = (direction == HorizontalDirection.right ? 10000 : -10000);
+    int lineDistance =
+        (direction == HorizontalDirection.right ? 10000 : -10000);
 
     List<TextElement> sortedElement = _sortTextElement(
       List.from(blocks),
@@ -278,7 +298,8 @@ class TextBlockHelper {
   ///     BrsTextElement startElement = 'Welcome';
   ///     Result : BrsTextElement = ['How','are','you','?', 'Welcome']
   ///
-  static List<TextElement> combineLeftTextElement(TextElement startElement, List<TextBlock> blocks) {
+  static List<TextElement> combineLeftTextElement(
+      TextElement startElement, List<TextBlock> blocks) {
     return _combineTextElement(startElement, blocks, HorizontalDirection.left);
   }
 
@@ -289,7 +310,8 @@ class TextBlockHelper {
   ///     BrsTextElement startElement = 'you';
   ///     Result : BrsTextElement = ['you','?', 'Welcome', '!']
   ///
-  static List<TextElement> combineRightTextElement(TextElement startElement, List<TextBlock> blocks) {
+  static List<TextElement> combineRightTextElement(
+      TextElement startElement, List<TextBlock> blocks) {
     return _combineTextElement(startElement, blocks, HorizontalDirection.right);
   }
 
@@ -300,8 +322,8 @@ class TextBlockHelper {
   ///     BrsTextElement endElement = 'Welcome';
   ///     Result : BrsTextElement = ['you','?']
   ///
-  static List<TextElement> combineBetweenTextElement(
-      TextElement startElement, TextElement endElement, List<TextBlock> blocks) {
+  static List<TextElement> combineBetweenTextElement(TextElement startElement,
+      TextElement endElement, List<TextBlock> blocks) {
     List<TextElement> listTextElement = [];
 
     bool asNext = true;
@@ -331,9 +353,12 @@ class TextBlockHelper {
       }
 
       if (block.trapezoid.topRightOffset.dx - block.trapezoid.topLeftOffset.dx >
-              longTextBlock.trapezoid.topRightOffset.dx - longTextBlock.trapezoid.topLeftOffset.dx &&
-          block.trapezoid.topRightOffset.dy - block.trapezoid.topRightOffset.dy >
-              longTextBlock.trapezoid.topLeftOffset.dy - longTextBlock.trapezoid.topLeftOffset.dy) {
+              longTextBlock.trapezoid.topRightOffset.dx -
+                  longTextBlock.trapezoid.topLeftOffset.dx &&
+          block.trapezoid.topRightOffset.dy -
+                  block.trapezoid.topRightOffset.dy >
+              longTextBlock.trapezoid.topLeftOffset.dy -
+                  longTextBlock.trapezoid.topLeftOffset.dy) {
         longTextBlock = block;
       }
     }

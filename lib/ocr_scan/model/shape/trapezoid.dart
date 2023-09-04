@@ -2,7 +2,8 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart' as ml_kit;
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart'
+    as ml_kit;
 import 'package:ocr_scan_text/ocr_scan/services/ocr_scan_service.dart';
 
 import '../recognizer_text/text_element.dart';
@@ -186,7 +187,8 @@ class Trapezoid {
     Size absoluteImageSize,
     double adjustTranslate,
   ) {
-    double denominator = Platform.isIOS || (Platform.isAndroid && OcrScanService.actualMode == Mode.static)
+    double denominator = Platform.isIOS ||
+            (Platform.isAndroid && OcrScanService.actualMode == Mode.static)
         ? absoluteImageSize.width
         : absoluteImageSize.height;
     switch (rotation) {
@@ -206,7 +208,8 @@ class Trapezoid {
     Size absoluteImageSize,
     double adjustTranslate,
   ) {
-    double denominator = Platform.isIOS || (Platform.isAndroid && OcrScanService.actualMode == Mode.static)
+    double denominator = Platform.isIOS ||
+            (Platform.isAndroid && OcrScanService.actualMode == Mode.static)
         ? absoluteImageSize.height
         : absoluteImageSize.width;
     switch (rotation) {
@@ -240,5 +243,8 @@ class Trapezoid {
 
   @override
   int get hashCode =>
-      topLeftOffset.hashCode ^ topRightOffset.hashCode ^ bottomRightOffset.hashCode ^ bottomLeftOffset.hashCode;
+      topLeftOffset.hashCode ^
+      topRightOffset.hashCode ^
+      bottomRightOffset.hashCode ^
+      bottomLeftOffset.hashCode;
 }

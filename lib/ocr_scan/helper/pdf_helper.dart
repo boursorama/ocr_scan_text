@@ -26,14 +26,16 @@ class PDFHelper {
     );
   }
 
-  static Future<img.Image?> _createFullImageFromPDF(PdfDocument document) async {
+  static Future<img.Image?> _createFullImageFromPDF(
+      PdfDocument document) async {
     final List<img.Image> imageList = [];
     int height = 0, width = 0;
 
     /// On prend que les 2 premiers page max, sinon c'est le bordel
     for (int i = 1; i <= min(2, document.pageCount); i++) {
       final page = await document.getPage(i);
-      int scaleUp = 5; // 5 is an arbitrary number, we enlarge the image to improve text detection
+      int scaleUp =
+          5; // 5 is an arbitrary number, we enlarge the image to improve text detection
       final pageImage = await page.render(
         width: page.width.toInt() * scaleUp,
         height: page.height.toInt() * scaleUp,
@@ -47,7 +49,8 @@ class PDFHelper {
       if (imgBytes == null) {
         continue;
       }
-      var libImage = img.decodeImage(imgBytes.buffer.asUint8List(imgBytes.offsetInBytes, imgBytes.lengthInBytes));
+      var libImage = img.decodeImage(imgBytes.buffer
+          .asUint8List(imgBytes.offsetInBytes, imgBytes.lengthInBytes));
       if (libImage == null) {
         continue;
       }
