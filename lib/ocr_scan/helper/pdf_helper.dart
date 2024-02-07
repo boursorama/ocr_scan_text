@@ -9,7 +9,7 @@ import 'package:pdf_render/pdf_render.dart';
 
 class PDFHelper {
   static Future<ImagePDF?> convertToPDFImage(PdfDocument document) async {
-    img.Image? image = await _createFullImageFromPDF(document);
+    img.Image? image = await _createFullImageFromPDF(document: document);
     if (image == null) {
       return null;
     }
@@ -26,35 +26,32 @@ class PDFHelper {
     );
   }
 
-  static Future<img.Image?> _createFullImageFromPDF(
-      PdfDocument document) async {
+  static Future<img.Image?> _createFullImageFromPDF({required PdfDocument document, int scale = 5}) async {
     final List<img.Image> imageList = [];
-    int height = 0, width = 0;
+    int width = 0;
+    List<int> heights = [];
 
     /// On prend que les 2 premiers page max, sinon c'est le bordel
     for (int i = 1; i <= min(2, document.pageCount); i++) {
       final page = await document.getPage(i);
-      int scaleUp =
-          5; // 5 is an arbitrary number, we enlarge the image to improve text detection
       final pageImage = await page.render(
-        width: page.width.toInt() * scaleUp,
-        height: page.height.toInt() * scaleUp,
+        width: page.width.toInt() * scale,
+        height: page.height.toInt() * scale,
         backgroundFill: true,
         allowAntialiasingIOS: true,
-        fullWidth: page.width * scaleUp,
-        fullHeight: page.height * scaleUp,
+        fullWidth: page.width * scale,
+        fullHeight: page.height * scale,
       );
       var imageUI = await pageImage.createImageDetached();
       var imgBytes = await imageUI.toByteData(format: ImageByteFormat.png);
       if (imgBytes == null) {
         continue;
       }
-      var libImage = img.decodeImage(imgBytes.buffer
-          .asUint8List(imgBytes.offsetInBytes, imgBytes.lengthInBytes));
+      var libImage = img.decodeImage(imgBytes.buffer.asUint8List(imgBytes.offsetInBytes, imgBytes.lengthInBytes));
       if (libImage == null) {
         continue;
       }
-      height += imageUI.height;
+      heights.add(imageUI.height);
       if ((imageUI.width) > width) {
         width = imageUI.width;
       }
@@ -62,23 +59,27 @@ class PDFHelper {
       imageList.add(libImage);
     }
 
-    final img.Image mergedImage = img.Image(width: width, height: height);
+    int fullHeight = 0;
+    for (var height in heights) {
+      fullHeight += height;
+    }
+
+    final img.Image mergedImage = img.Image(
+      width: width,
+      height: fullHeight,
+    );
 
     // Merge generated image vertically as vertical-orientated-multi-pdf
+    var lastOffset = 0;
     for (var i = 0; i < imageList.length; i++) {
-      // one page height
-      final onePageImageOffset = height / document.pageCount;
-
-      // offset for actual page from by y axis
-      final actualPageOffset = i == 0 ? 0 : onePageImageOffset * i - 1;
-
       img.compositeImage(
         mergedImage,
         imageList[i],
         srcW: width,
-        srcH: onePageImageOffset.round(),
-        dstY: actualPageOffset.round(),
+        srcH: heights[i].round(),
+        dstY: lastOffset.round(),
       );
+      lastOffset += heights[i];
     }
 
     return mergedImage;
