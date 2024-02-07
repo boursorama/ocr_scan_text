@@ -1,3 +1,8 @@
+## 1.3.2
+
+- Fixed crash when pdf contains different sizes of page
+
+
 ## 1.3.0
 
 - Updated `file_picker` dependency, watch out for `ffi` version
